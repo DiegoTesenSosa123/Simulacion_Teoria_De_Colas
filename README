@@ -1,0 +1,62 @@
+# Simulador de Colas M/M/s 3D - Grupo 1
+
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Technology](https://img.shields.io/badge/tech-HTML5%20%7C%20Three.js%20%7C%20Chart.js-green)
+![Status](https://img.shields.io/badge/status-active-success)
+
+Una aplicación web interactiva para simular sistemas de colas (Teoría de Colas M/M/s) con visualización 3D en tiempo real, análisis financiero y diseño totalmente responsivo (móvil y escritorio).
+
+## 🚀 Características Principales
+
+* **Motor Matemático Robusto:** Implementación fiel de la lógica M/M/s (llegadas Poisson, servicio Exponencial).
+* **Visualización 3D:** Renderizado con **Three.js** que muestra servidores, clientes y colas dinámicas.
+* **Tráfico Preferencial Inteligente:** Soporte para clientes VIP con colas prioritarias y densidad configurable (ej. 1 caja VIP por cada N cajas normales).
+* **Análisis Financiero:** Cálculo automático de costos operativos, ingresos por ticket promedio, horas extra y ROI (Retorno de Inversión).
+* **Interfaz Responsiva:** Diseño moderno adaptado para funcionar en **celulares** y computadoras de escritorio.
+* **Modo Oscuro/Claro:** Interfaz adaptable a la preferencia del usuario.
+* **Reportes con IA:** Diagnóstico automático de salud financiera y operativa al finalizar la simulación.
+
+## 🛠️ Tecnologías Utilizadas
+
+* **Frontend:** HTML5, CSS3.
+* **Estilos:** [Tailwind CSS](https://tailwindcss.com/) (vía CDN).
+* **Gráficos 3D:** [Three.js](https://threejs.org/).
+* **Gráficas Estadísticas:** [Chart.js](https://www.chartjs.org/).
+* **Iconografía:** Google Material Icons.
+
+## 📋 Requisitos de Instalación
+
+No se requiere instalación de dependencias (Node.js, NPM) ya que el proyecto utiliza librerías vía CDN para máxima portabilidad.
+
+1.  Clona este repositorio o descarga el archivo ZIP.
+2.  Abre el archivo `index.html` en cualquier navegador web moderno (Chrome, Firefox, Edge).
+3.  ¡Listo! La simulación comenzará a cargar.
+
+> **Nota:** Para que las texturas y módulos de JS funcionen correctamente sin restricciones de seguridad CORS locales, se recomienda usar un servidor local simple como `Live Server` en VS Code.
+
+## 🎮 Cómo Usar
+
+1.  **Configuración:** Usa el botón de engranaje ⚙️ o el panel lateral para definir:
+    * Tasa de llegada (λ) y servicio (μ).
+    * Número de servidores (s) y colas.
+    * Jornada laboral (horas).
+    * Parámetros financieros (sueldos, costos, etc.).
+2.  **Iniciar:** Presiona el botón `INICIAR`.
+3.  **Interactuar:**
+    * Usa el mouse o táctil para rotar y hacer zoom en la vista 3D.
+    * Acelera la simulación con el botón de velocidad (`x1` a `x5`).
+    * Simula una "Hora Pico" con el botón de fuego 🔥.
+4.  **Resultados:** Al finalizar la jornada, recibirás un reporte detallado con métricas financieras y operativas.
+
+## 👥 Integrantes - Grupo 1
+
+Este proyecto fue desarrollado por:
+
+* **Diego Tesen Sosa**
+* **Bances Celeste**
+* **Cabrera Brayan**
+* **Sanchez Gomeador**
+* **Vigil Joaquin**
+
+---
+*Desarrollado para el curso de Simulación de Sistemas - 2026*
