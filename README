@@ -1,62 +1,84 @@
-# Simulador de Colas M/M/s 3D - Grupo 1
+}# 🚀 Simulador de Colas M/M/s 3D
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Technology](https://img.shields.io/badge/tech-HTML5%20%7C%20Three.js%20%7C%20Chart.js-green)
-![Status](https://img.shields.io/badge/status-active-success)
+![Versión](https://img.shields.io/badge/versión-1.0.0-blue?style=for-the-badge)
+![Tech](https://img.shields.io/badge/tech-HTML5%20|%20Three.js%20|%20Chart.js-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge)
 
-Una aplicación web interactiva para simular sistemas de colas (Teoría de Colas M/M/s) con visualización 3D en tiempo real, análisis financiero y diseño totalmente responsivo (móvil y escritorio).
-
-## 🚀 Características Principales
-
-* **Motor Matemático Robusto:** Implementación fiel de la lógica M/M/s (llegadas Poisson, servicio Exponencial).
-* **Visualización 3D:** Renderizado con **Three.js** que muestra servidores, clientes y colas dinámicas.
-* **Tráfico Preferencial Inteligente:** Soporte para clientes VIP con colas prioritarias y densidad configurable (ej. 1 caja VIP por cada N cajas normales).
-* **Análisis Financiero:** Cálculo automático de costos operativos, ingresos por ticket promedio, horas extra y ROI (Retorno de Inversión).
-* **Interfaz Responsiva:** Diseño moderno adaptado para funcionar en **celulares** y computadoras de escritorio.
-* **Modo Oscuro/Claro:** Interfaz adaptable a la preferencia del usuario.
-* **Reportes con IA:** Diagnóstico automático de salud financiera y operativa al finalizar la simulación.
-
-## 🛠️ Tecnologías Utilizadas
-
-* **Frontend:** HTML5, CSS3.
-* **Estilos:** [Tailwind CSS](https://tailwindcss.com/) (vía CDN).
-* **Gráficos 3D:** [Three.js](https://threejs.org/).
-* **Gráficas Estadísticas:** [Chart.js](https://www.chartjs.org/).
-* **Iconografía:** Google Material Icons.
-
-## 📋 Requisitos de Instalación
-
-No se requiere instalación de dependencias (Node.js, NPM) ya que el proyecto utiliza librerías vía CDN para máxima portabilidad.
-
-1.  Clona este repositorio o descarga el archivo ZIP.
-2.  Abre el archivo `index.html` en cualquier navegador web moderno (Chrome, Firefox, Edge).
-3.  ¡Listo! La simulación comenzará a cargar.
-
-> **Nota:** Para que las texturas y módulos de JS funcionen correctamente sin restricciones de seguridad CORS locales, se recomienda usar un servidor local simple como `Live Server` en VS Code.
-
-## 🎮 Cómo Usar
-
-1.  **Configuración:** Usa el botón de engranaje ⚙️ o el panel lateral para definir:
-    * Tasa de llegada (λ) y servicio (μ).
-    * Número de servidores (s) y colas.
-    * Jornada laboral (horas).
-    * Parámetros financieros (sueldos, costos, etc.).
-2.  **Iniciar:** Presiona el botón `INICIAR`.
-3.  **Interactuar:**
-    * Usa el mouse o táctil para rotar y hacer zoom en la vista 3D.
-    * Acelera la simulación con el botón de velocidad (`x1` a `x5`).
-    * Simula una "Hora Pico" con el botón de fuego 🔥.
-4.  **Resultados:** Al finalizar la jornada, recibirás un reporte detallado con métricas financieras y operativas.
-
-## 👥 Integrantes - Grupo 1
-
-Este proyecto fue desarrollado por:
-
-* **Diego Tesen Sosa**
-* **Bances Celeste**
-* **Cabrera Brayan**
-* **Sanchez Gomeador**
-* **Vigil Joaquin**
+Una plataforma web interactiva diseñada para la simulación avanzada de sistemas de colas (Teoría M/M/s). Combina un **motor matemático robusto** con **visualización 3D en tiempo real**, análisis financiero detallado y diseño adaptativo para móviles y escritorio.
 
 ---
-*Desarrollado para el curso de Simulación de Sistemas - 2026*
+
+## ✨ Características Principales
+
+| Función | Descripción |
+| :--- | :--- |
+| **🧠 Motor M/M/s** | Implementación matemática precisa de procesos de nacimiento y muerte (Poisson/Exponencial). |
+| **🎮 Gráficos 3D** | Renderizado dinámico con **Three.js** que visualiza servidores, clientes y flujo de colas. |
+| **💎 Gestión VIP** | Soporte para tráfico preferencial con densidad configurable (1 caja VIP por cada N normales). |
+| **💰 Análisis ROI** | Cálculo automático de costos operativos, ingresos por ticket y pago de horas extra. |
+| **📱 Responsive** | Interfaz optimizada para una experiencia fluida tanto en computadoras como en **celulares**. |
+| **🤖 Reportes IA** | Diagnóstico automático de salud operativa y financiera al finalizar la simulación. |
+
+---
+
+## 🛠️ Stack Tecnológico
+
+* **Core:** HTML5 / CSS3 / JavaScript (ES6+)
+* **Gráficos 3D:** [Three.js](https://threejs.org/) (vía CDN)
+* **Análisis Estadístico:** [Chart.js](https://www.chartjs.org/)
+* **Framework de Estilos:** [Tailwind CSS](https://tailwindcss.com/)
+* **Iconografía:** Google Material Icons Round
+
+---
+
+## 📦 Requisitos e Instalación
+
+Gracias al uso de librerías vía CDN, el proyecto no requiere instalación de dependencias pesadas como Node.js o NPM.
+
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone [https://github.com/DiegoTesenSosa123/Simulacion_Teoria_De_Colas.git](https://github.com/DiegoTesenSosa123/Simulacion_Teoria_De_Colas.git)
+    ```
+2.  **Ejecutar:**
+    Abre el archivo `index.html` en cualquier navegador moderno.
+
+> [!TIP]
+> Para una funcionalidad completa de los módulos de JavaScript y evitar restricciones de seguridad CORS locales, se recomienda utilizar la extensión **Live Server** en Visual Studio Code.
+
+---
+
+## 🎮 Guía de Operación
+
+### 1. Configuración Inicial ⚙️
+Utiliza el panel lateral o el botón de engranaje para definir:
+* **Parámetros Técnicos:** Tasas de llegada ($\lambda$) y servicio ($\mu$).
+* **Recursos:** Cantidad de servidores ($s$) y topología de las colas.
+* **Negocio:** Horas de jornada laboral y variables financieras (sueldos, costos unitarios).
+
+### 2. Ejecución y Control ▶️
+* **Iniciar:** Presiona `INICIAR` para arrancar el reloj y el flujo de clientes.
+* **Velocidad:** Ajusta el tiempo desde `x1` hasta `Turbo` para análisis rápidos.
+* **Hora Pico 🔥:** Activa el modo de alta demanda para estresar el sistema.
+
+### 3. Resultados y Análisis 📊
+Al concluir la jornada, el sistema generará un **Diagnóstico Inteligente** que incluye:
+* Tasa de ocupación y productividad.
+* Costo de sobretiempo.
+* Balance neto (Utilidad vs. Costo).
+
+---
+
+## 👥 Equipo de Desarrollo - Grupo 1
+
+Desarrollado con dedicación por:
+
+* 👤 **Diego Tesen Sosa**
+* 👤 **Bances Celeste**
+* 👤 **Cabrera Brayan**
+* 👤 **Sanchez Gomeador**
+* 👤 **Vigil Joaquin**
+
+---
+<p align="center">
+  <i>Desarrollado para el curso de Simulación de Sistemas • 2026</i>
+</p>
