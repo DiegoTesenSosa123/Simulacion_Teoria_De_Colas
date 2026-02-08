@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Simulador de Colas - Grupo 1</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/ui.css">
+    <link rel="stylesheet" href="css/animations.css">
+
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { pref: '#d946ef', gen: '#f59e0b', ground: '#0f172a' } } } }
+    </script>
+
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+    </script>
+
+    <style>
+        /* Estilos específicos para interfaz */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        input[type=range] { -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%; background: currentColor; margin-top: -5px; cursor: pointer; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; cursor: pointer; background: rgba(148, 163, 184, 0.4); border-radius: 2px; }
+        
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.4); }
+        .dark .glass-panel { background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.08); }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-white h-screen flex overflow-hidden transition-colors duration-300">
+
+    <audio id="bg-music" loop>
+        <source src="music/background.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/60 z-40 hidden md:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-white border-r border-slate-200 dark:bg-slate-800 dark:border-slate-700 flex flex-col z-50 transform -translate-x-full md:translate-x-0 md:relative transition-transform duration-300 shadow-2xl">
+        
+        <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-black text-blue-600 dark:text-blue-400 flex items-center gap-2 tracking-tight">
+                    <span class="material-icons-round">view_in_ar</span> SIMULADOR
+                </h1>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-bold tracking-[0.2em] uppercase">Investigación de Operaciones</p>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-red-500 p-2 transition-colors">
+                <span class="material-icons-round">close</span>
+            </button>
+            
+            <button id="btn-settings-open" class="hidden md:block text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 relative">
+                <span class="material-icons-round text-2xl">settings</span>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6 overflow-y-auto flex-1 custom-scroll">
+            <button id="btn-settings-mobile" class="md:hidden w-full flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl text-slate-600 dark:text-slate-200 font-bold text-sm mb-2 border border-slate-200 dark:border-slate-600">
+                <span>Configuración Avanzada</span>
+                <span class="material-icons-round text-blue-500">tune</span>
+            </button>
+
+            <div class="space-y-5">
+                <div class="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-slate-700">
+                    <span class="material-icons-round text-slate-400 text-sm">filter_list</span>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Parámetros</label>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 block">Llegada (λ)</label>
+                        <input type="number" id="inp-lambda" value="25" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm font-mono text-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 block">Servicio (μ)</label>
+                        <input type="number" id="inp-mu" value="12" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm font-mono text-slate-700 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 block">Servidores</label>
+                            <input type="number" id="inp-servers" value="4" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm font-mono text-slate-700 dark:text-white focus:ring-2 focus:ring-green-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 block">Colas</label>
+                            <input type="number" id="inp-queues" value="3" min="1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm font-mono text-slate-700 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 space-y-3 pb-8 md:pb-6">
+            <button id="btn-start" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/30 active:scale-95 text-base tracking-wide">
+                <span class="material-icons-round">play_arrow</span> INICIAR SIMULACIÓN
+            </button>
+            <button id="btn-pause" disabled class="w-full bg-slate-200 dark:bg-slate-700 text-slate-400 p-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all cursor-not-allowed text-base">
+                <span class="material-icons-round">pause</span> PAUSAR
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 relative bg-slate-100 dark:bg-slate-950 overflow-hidden w-full h-full flex flex-col">
+        
+        <div class="absolute top-2 left-2 right-2 md:top-4 md:left-4 md:right-4 glass-panel rounded-2xl p-2 z-10 shadow-lg flex flex-col gap-2 md:flex-row md:items-center md:justify-between transition-all border border-white/40 dark:border-white/5">
+            
+            <div class="flex items-center justify-between w-full md:w-auto gap-2 md:gap-4">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <button onclick="toggleSidebar()" class="md:hidden p-2.5 bg-white dark:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 shadow-sm border border-slate-200 dark:border-slate-700 active:bg-slate-100">
+                        <span class="material-icons-round">menu</span>
+                    </button>
+
+                    <div class="flex items-center gap-3 px-3 py-2 bg-slate-50/80 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 shadow-inner">
+                        <div id="status-indicator" class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 bg-slate-400 rounded-full shadow-sm"></span>
+                            <span class="text-[10px] md:text-xs font-black tracking-wider text-slate-500 dark:text-slate-400">ESPERA</span>
+                        </div>
+                        <div class="h-4 w-px bg-slate-300 dark:bg-slate-600"></div>
+                        <span id="clock-display" class="font-mono text-xl md:text-2xl font-black text-blue-600 dark:text-blue-400 tracking-tight leading-none">00:00</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 md:gap-5 px-1 md:px-3">
+                    <div class="text-center">
+                        <span class="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block">Pref.</span>
+                        <span class="text-fuchsia-600 dark:text-fuchsia-400 font-mono font-bold text-lg md:text-xl leading-none" id="count-pref">0</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block">Gral.</span>
+                        <span class="text-amber-600 dark:text-amber-500 font-mono font-bold text-lg md:text-xl leading-none" id="count-gen">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar w-full md:w-auto pb-1 md:pb-0 pl-1">
+                <div class="flex items-center gap-2 px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm shrink-0">
+                    <button id="btn-music-toggle" class="text-slate-400 hover:text-blue-500 transition-colors flex items-center justify-center">
+                        <span class="material-icons-round text-xl" id="icon-music">volume_off</span>
+                    </button>
+                    <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.3" class="w-16 md:w-20 accent-blue-500 h-1.5 rounded-full cursor-pointer">
+                </div>
+
+                <button id="btn-speed" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm shrink-0 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors whitespace-nowrap">
+                    <span id="txt-speed">x1</span>
+                </button>
+                
+                <button id="btn-theme" class="p-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-500 dark:text-yellow-400 shadow-sm shrink-0 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <span class="material-icons-round text-xl leading-none" id="icon-theme">dark_mode</span>
+                </button>
+                
+                <button id="btn-pico" disabled class="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-xl text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 cursor-not-allowed whitespace-nowrap shrink-0 transition-all uppercase tracking-wide">
+                    Hora Pico
+                </button>
+            </div>
+        </div>
+
+        <div id="canvas-container" class="absolute inset-0 z-0 bg-gradient-to-b from-slate-200 to-slate-300 dark:from-slate-900 dark:to-slate-950"></div>
+
+        <div id="chart-container-wrapper" class="glass-panel p-3 md:p-4 flex flex-col justify-end transition-colors duration-300 absolute bottom-0 left-0 right-0 z-10 pointer-events-none border-t border-white/20 shadow-[0_-10px_30px_rgba(0,0,0,0.1)]">
+            <div class="flex justify-between items-center mb-1 px-1">
+                <h3 class="text-[10px] md:text-xs font-black text-slate-500 dark:text-slate-400 uppercase flex items-center gap-1 tracking-widest">
+                    <span class="material-icons-round text-sm">show_chart</span> Monitoreo en Vivo
+                </h3>
+            </div>
+            <div class="w-full h-28 md:h-40 relative">
+                <canvas id="realtimeChart"></canvas>
+            </div>
+        </div>
+
+        <div id="results-trigger" class="hidden absolute inset-0 bg-white/95 dark:bg-slate-900/95 z-30 flex items-center justify-center backdrop-blur-md p-4 transition-all">
+            <div class="text-center p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-[2rem] shadow-2xl w-full max-w-sm transform scale-100 transition-transform">
+                <div class="text-6xl mb-6 animate-bounce">🏁</div>
+                <h2 class="text-3xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">¡Jornada Terminada!</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mb-8">Todos los clientes han sido atendidos.</p>
+                <button id="btn-open-report" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2 active:scale-95">
+                    <span class="material-icons-round">assessment</span> VER INFORME
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 modal-enter">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-round text-blue-500">tune</span> Configuración
+                </h3>
+                <button id="btn-settings-cancel-x" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"><span class="material-icons-round">close</span></button>
+            </div>
+            
+            <div class="p-5 overflow-y-auto custom-scroll space-y-6">
+                <div>
+                    <h4 class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase mb-3 tracking-wider">Parámetros Financieros</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase block mb-1">Sueldo/Hr</label>
+                            <input type="number" id="cost-salary" value="15.00" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase block mb-1">Costo/Cliente</label>
+                            <input type="number" id="cost-client" value="0.50" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase block mb-1">Ticket Promedio</label>
+                        <input type="number" id="cost-revenue" value="20.00" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors">
+                    </div>
+                    <div class="mt-4">
+                        <label class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase block mb-1">Presupuesto</label>
+                        <input type="number" id="cost-budget" value="1000.00" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase mb-3 tracking-wider">Ajustes Globales</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase block mb-1">Jornada (Hrs)</label>
+                            <input type="number" id="inp-hours" value="8" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:text-white">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase block mb-1">Ratio Pref.</label>
+                            <input type="number" id="inp-pref" value="5" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm dark:text-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-5 border-t border-slate-200 dark:border-slate-700 flex gap-3">
+                <button id="btn-settings-cancel" class="flex-1 py-3 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">Cancelar</button>
+                <button id="btn-settings-save" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-lg hover:bg-blue-500 transition-colors">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="report-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-7xl h-full max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden relative">
+            <button id="btn-report-close" class="absolute top-3 right-3 z-20 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-white p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"><span class="material-icons-round">close</span></button>
+            
+            <div class="overflow-y-auto p-4 md:p-8 h-full custom-scroll">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-3">
+                    <span class="material-icons-round text-blue-600 text-3xl">analytics</span> Resultados de la Jornada
+                </h2>
+                
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-center shadow-sm">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Atendidos</span>
+                        <div class="text-2xl md:text-3xl font-mono font-bold dark:text-white mt-1" id="rep-total">0</div>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-center shadow-sm">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Costos</span>
+                        <div class="text-2xl md:text-3xl font-mono font-bold text-red-500 mt-1" id="rep-cost">$0</div>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-center shadow-sm">
+                        <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Ventas</span>
+                        <div class="text-2xl md:text-3xl font-mono font-bold text-blue-500 mt-1" id="rep-revenue">$0</div>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 text-center relative overflow-hidden shadow-sm">
+                        <div id="profit-bg" class="absolute inset-0 opacity-10"></div>
+                        <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider relative z-10">Neto (ROI)</span>
+                        <div class="text-2xl md:text-3xl font-mono font-bold relative z-10" id="rep-profit">$0</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-indigo-50 to-white dark:from-slate-800 dark:to-slate-900 border border-indigo-200 dark:border-indigo-800 p-5 md:p-8 rounded-3xl mb-8 relative">
+                    <div class="absolute top-4 right-4 opacity-10"><span class="material-icons-round text-6xl text-indigo-500">psychology</span></div>
+                    <h3 class="text-indigo-600 dark:text-indigo-400 font-bold text-lg md:text-xl mb-4 flex items-center gap-2">
+                        <span class="material-icons-round">auto_awesome</span> Diagnóstico Inteligente
+                    </h3>
+                    <div class="space-y-4 text-sm md:text-base relative z-10">
+                        <div class="flex gap-3">
+                            <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-2 shrink-0"></span>
+                            <p><strong class="text-slate-800 dark:text-white">Financiero:</strong> <span id="ai-diag-finance" class="text-slate-600 dark:text-slate-300">Calculando...</span></p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 shrink-0"></span>
+                            <p><strong class="text-slate-800 dark:text-white">Operativo:</strong> <span id="ai-diag-ops" class="text-slate-600 dark:text-slate-300">Analizando...</span></p>
+                        </div>
+                        <div class="mt-4 p-4 bg-white/50 dark:bg-indigo-900/30 rounded-xl border border-indigo-100 dark:border-indigo-500/20">
+                            <strong class="text-indigo-700 dark:text-indigo-300 text-xs uppercase tracking-wide block mb-1">Recomendación Estratégica</strong>
+                            <p id="ai-recommendation" class="text-slate-800 dark:text-white font-medium text-base md:text-lg">Generando estrategia...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 rounded-3xl p-4 md:p-6 border border-slate-200 dark:border-slate-700">
+                    <h3 class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase mb-4 flex items-center gap-2">
+                        <span class="material-icons-round text-base">timeline</span> Demanda Histórica
+                    </h3>
+                    <div class="w-full h-[250px] md:h-[400px]"><canvas id="finalChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Activación de audio al primer toque (Fix Mobile)
+        const initAudio = () => {
+            const audio = document.getElementById('bg-music');
+            if(audio && audio.paused) {
+                audio.play().catch(()=>{});
+                audio.volume = 0.3;
+            }
+            document.removeEventListener('click', initAudio);
+            document.removeEventListener('touchstart', initAudio);
+        };
+        document.addEventListener('click', initAudio);
+        document.addEventListener('touchstart', initAudio);
+    </script>
+
+</body>
+</html>

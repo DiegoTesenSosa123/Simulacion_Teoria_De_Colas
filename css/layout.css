@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    overflow: hidden; 
+}
+
+main { 
+    display: flex; 
+    flex-direction: column; 
+}
+
+#canvas-container { 
+    flex: 1; 
+    position: relative; 
+    min-height: 0; 
+}
+
+#chart-container-wrapper { 
+    height: 200px; 
+    flex-shrink: 0; 
+} 
+
+canvas { 
+    display: block; 
+    outline: none; 
+}
