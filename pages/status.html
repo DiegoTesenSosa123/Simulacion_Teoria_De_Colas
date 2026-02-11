@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status - MMM.config</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="../js/theme-config.js"></script>
+</head>
+
+<body class="bg-slate-950 text-slate-300 font-sans min-h-screen flex flex-col">
+
+    <nav class="flex-none sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="../index.html" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display">M</div>
+                <span class="font-display font-bold text-lg text-white tracking-tight">MMM.config <span class="text-slate-500 font-light ml-2 uppercase text-xs font-mono tracking-widest">Status</span></span>
+            </a>
+            <a href="../index.html" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-all flex items-center gap-2 border border-slate-700">
+                <span class="material-icons-round text-sm">logout</span> Salir
+            </a>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex items-center justify-center p-6">
+        <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+            
+            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6 mb-8 flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <span class="material-icons-round text-white text-2xl">check</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Todos los sistemas operativos</h2>
+                    <p class="text-emerald-400 text-sm">El motor de simulación funciona correctamente.</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg">
+                    <span class="font-medium text-slate-300">Core Engine (M/M/s Logic)</span>
+                    <span class="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">OPERATIONAL</span>
+                </div>
+                <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg">
+                    <span class="font-medium text-slate-300">WebGL Renderer (Three.js)</span>
+                    <span class="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">OPERATIONAL</span>
+                </div>
+                <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg">
+                    <span class="font-medium text-slate-300">API Gateway</span>
+                    <span class="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">OPERATIONAL</span>
+                </div>
+                <div class="flex justify-between items-center p-4 bg-slate-800/50 rounded-lg">
+                    <span class="font-medium text-slate-300">Database (User Metrics)</span>
+                    <span class="text-xs font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">OPERATIONAL</span>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center text-xs text-slate-600 font-mono">
+                Last incident: None reported in the last 90 days.
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="py-8 bg-slate-950/50 border-t border-slate-800 text-center text-xs text-slate-600 font-mono uppercase tracking-widest">
+        &copy; 2026 MMM.Config System // Real-time Monitoring
+    </footer>
+
+</body>
+</html>

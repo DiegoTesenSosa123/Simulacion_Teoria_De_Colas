@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacidad - MMM.config</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <script src="../js/theme-config.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-300 font-sans selection:bg-blue-500/30 flex flex-col min-h-screen">
+
+    <nav class="flex-none sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="../index.html" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display">M</div>
+                <span class="font-display font-bold text-lg text-white">MMM.config <span class="text-slate-500 font-light ml-2 uppercase text-xs font-mono tracking-widest">Privacidad</span></span>
+            </a>
+            <a href="../index.html" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-all flex items-center gap-2 border border-slate-700">
+                <span class="material-icons-round text-sm">logout</span> Salir
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-6 py-16 flex-1">
+        <header class="mb-12 border-b border-slate-800 pb-8">
+            <span class="text-emerald-500 font-mono text-xs font-bold tracking-widest uppercase mb-2 block">Seguridad</span>
+            <h1 class="font-display text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">Política de Privacidad</h1>
+            <p class="text-slate-400">Versión 1.0 // Vigente para el año 2026</p>
+        </header>
+
+        <div class="space-y-10 text-slate-300 leading-relaxed text-justify">
+            <section>
+                <h2 class="text-2xl font-bold text-white mb-4 font-display">Procesamiento Local de Datos</h2>
+                <p>
+                    En <strong>MMM.config</strong>, la privacidad no es una opción, es la base de nuestra arquitectura. Todas las simulaciones, parámetros financieros y configuraciones de red se procesan <strong>exclusivamente en el lado del cliente (su navegador)</strong>.
+                </p>
+                <div class="mt-6 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl flex gap-4">
+                    <span class="material-icons-round text-emerald-500 mt-1">shield</span>
+                    <p class="text-sm">Sus datos de negocio nunca se transmiten a servidores externos ni se almacenan en bases de datos fuera de su sesión actual.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-white mb-4 font-display">Uso de Tecnologías</h2>
+                <ul class="space-y-4">
+                    <li class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                        <strong class="text-white block mb-1">JavaScript & WebGL:</strong> Utilizados para el motor lógico y el renderizado 3D. Se ejecutan localmente consumiendo recursos de su hardware (CPU/GPU).
+                    </li>
+                    <li class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                        <strong class="text-white block mb-1">Local Storage:</strong> Podemos utilizar el almacenamiento local del navegador para recordar sus preferencias de tema (oscuro/claro) entre sesiones.
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-white mb-4 font-display">Cookies</h2>
+                <p>
+                    Esta plataforma <strong>no utiliza cookies de seguimiento (tracking)</strong>, perfiles de usuario ni herramientas de publicidad de terceros. No rastreamos su comportamiento fuera de la herramienta de simulación.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold text-white mb-4 font-display">Contacto</h2>
+                <p>
+                    Para dudas sobre la implementación técnica de estos estándares de privacidad, puede consultar la documentación en la sección de <a href="docs.html" class="text-blue-400 hover:underline">Arquitectura</a>.
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-800 py-8 mt-12 bg-slate-950 text-center text-xs text-slate-600 font-mono uppercase tracking-widest">
+        &copy; 2026 MMM.Config System // Data Integrity Guaranteed.
+    </footer>
+</body>
+</html>

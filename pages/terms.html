@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal - MMM.config</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <script src="../js/theme-config.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-300 font-sans selection:bg-blue-500/30 flex flex-col min-h-screen">
+
+    <nav class="flex-none sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="../index.html" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display">M</div>
+                <span class="font-display font-bold text-lg text-white tracking-tight">MMM.config <span class="text-slate-500 font-light ml-2 uppercase text-xs font-mono tracking-widest">Legal</span></span>
+            </a>
+            <a href="../index.html" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-all flex items-center gap-2 border border-slate-700">
+                <span class="material-icons-round text-sm">logout</span> Salir
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-3xl mx-auto px-6 py-16 flex-1">
+        
+        <header class="mb-12 text-center">
+            <h1 class="font-display text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">Centro Legal</h1>
+            <p class="text-slate-400">Transparencia y seguridad para nuestros usuarios.</p>
+        </header>
+
+        <div class="flex border-b border-slate-800 mb-8">
+            <button class="px-6 py-3 text-blue-400 border-b-2 border-blue-500 font-bold">Términos de Servicio</button>
+            <button class="px-6 py-3 text-slate-500 hover:text-white transition-colors">Privacidad</button>
+        </div>
+
+        <div class="space-y-12 text-slate-300 leading-relaxed text-sm md:text-base text-justify">
+            <section>
+                <h2 class="text-xl font-bold text-white mb-4 font-display">1. Licencia de Uso</h2>
+                <p>
+                    MMM.config concede una licencia personal, mundial, libre de regalías, no asignable y no exclusiva para usar el software proporcionado. Esta licencia tiene el único propósito de permitirle usar y disfrutar los beneficios del simulador según lo previsto.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-bold text-white mb-4 font-display">2. Responsabilidad de Datos</h2>
+                <p>
+                    Aunque nos esforzamos por la precisión matemática (99.9% en modelos Poisson), <strong>MMM.config no se hace responsable</strong> de pérdidas financieras, operativas o de negocio derivadas de decisiones tomadas basándose únicamente en estas simulaciones. El software es una herramienta de apoyo, no de decisión final.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-bold text-white mb-4 font-display">3. Privacidad y Cookies</h2>
+                <p>
+                    No almacenamos datos personales en nuestros servidores. Todas las configuraciones de simulación (Lambdas, costos, etc.) se procesan localmente en su navegador mediante JavaScript y WebGL.
+                </p>
+                <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700 mt-6">
+                    <strong class="text-white block mb-3 font-display uppercase text-xs tracking-widest">Datos que sí recopilamos (Anónimos):</strong>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-400">
+                        <li>Estadísticas de rendimiento del motor (FPS).</li>
+                        <li>Errores de ejecución para depuración técnica.</li>
+                        <li>Tipo de dispositivo para optimización de renderizado.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-bold text-white mb-4 font-display">4. Actualizaciones</h2>
+                <p>
+                    Nos reservamos el derecho de modificar o discontinuar, temporal o permanentemente, el Servicio (o cualquier parte del mismo) con o sin previo aviso. La versión actual es la <strong>v2.1 (Build 2026)</strong>.
+                </p>
+            </section>
+        </div>
+
+    </main>
+
+    <footer class="py-8 bg-slate-950 text-center text-xs text-slate-600 font-mono uppercase tracking-widest border-t border-slate-800">
+        &copy; 2026 MMM.Config System // Lambayeque, Perú.
+    </footer>
+
+</body>
+</html>

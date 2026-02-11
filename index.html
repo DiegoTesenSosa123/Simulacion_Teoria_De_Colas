@@ -3,375 +3,481 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Simulador de Colas (M/M/s) - Grupo 1</title>
+    <title>MMM.config - Simulation Suite</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/ui.css">
     <link rel="stylesheet" href="css/animation.css">
 
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: { extend: { colors: { pref: '#d946ef', gen: '#f59e0b', ground: '#0f172a' } } }
-        }
-    </script>
+    <script src="js/theme-config.js"></script>
 
     <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-            }
-        }
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
     </script>
-    
-    <style>
-        /* Evitar scroll elástico en móviles ios */
-        body { overscroll-behavior: none; }
-    </style>
 </head>
 
-<body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-white h-[100dvh] flex transition-colors duration-300 overflow-hidden">
+<body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-white h-[100dvh] flex transition-colors duration-300 overflow-hidden font-sans">
 
-    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden backdrop-blur-sm transition-opacity" onclick="toggleSidebar()"></div>
+    <div id="landing-page" class="fixed inset-0 z-50 overflow-y-auto custom-scroll bg-slate-900/95 backdrop-blur-sm">
+        
+        <div class="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none z-[-1]"></div>
+        <div class="fixed inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-[#0f172a] z-[-2]"></div>
+        <div class="fixed top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
+        <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
 
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-white border-r border-slate-200 dark:bg-slate-800 dark:border-slate-700 flex flex-col z-40 shadow-2xl transform -translate-x-full transition-transform duration-300 lg:translate-x-0 lg:static lg:shrink-0">
-        <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
-                    <span class="material-icons-round">view_in_ar</span> SIMULADOR
-                </h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-bold tracking-widest">GRUPO 1</p>
-            </div>
-            <button onclick="toggleSidebar()" class="lg:hidden text-slate-500">
-                <span class="material-icons-round">close</span>
-            </button>
-            
-            <button onclick="window.openSettings()" class="hidden lg:block text-slate-400 hover:text-blue-500 transition-colors p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700" title="Configurar Parámetros">
-                <span class="material-icons-round text-xl">settings</span>
-            </button>
-        </div>
-
-        <div class="p-6 space-y-6 overflow-y-auto flex-1 custom-scroll">
-            
-            <div class="lg:hidden mb-4">
-                 <button onclick="window.openSettings()" class="w-full py-3 border border-slate-300 dark:border-slate-600 rounded-lg flex items-center justify-center gap-2 text-sm font-bold text-slate-600 dark:text-slate-300">
-                    <span class="material-icons-round">tune</span> Configuración Avanzada
-                </button>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="text-xs text-slate-500 dark:text-slate-400">Llegada (λ)</label>
-                    <input type="number" id="inp-lambda" value="25" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm mt-1 text-slate-700 dark:text-white transition-colors focus:ring-2 focus:ring-blue-500 outline-none">
+        <nav class="sticky top-0 z-50 w-full border-b border-white/5 bg-slate-900/80 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display">M</div>
+                    <span class="font-display font-bold text-lg tracking-tight text-white">MMM.config</span>
                 </div>
-                <div>
-                    <label class="text-xs text-slate-500 dark:text-slate-400">Servicio (μ)</label>
-                    <input type="number" id="inp-mu" value="12" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm mt-1 text-slate-700 dark:text-white transition-colors focus:ring-2 focus:ring-blue-500 outline-none">
+                <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+                    <a href="#features" class="hover:text-white transition-colors">Capacidades</a>
+                    <a href="#industries" class="hover:text-white transition-colors">Industrias</a>
+                    <a href="#tech-specs" class="hover:text-white transition-colors">Motor</a>
+                    <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
                 </div>
-                <div>
-                    <label class="text-xs text-slate-500 dark:text-slate-400">Servidores (s)</label>
-                    <input type="number" id="inp-servers" value="4" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm mt-1 text-slate-700 dark:text-white transition-colors focus:ring-2 focus:ring-blue-500 outline-none">
+                <a href="#models" class="px-4 py-2 bg-white text-slate-900 text-xs font-bold rounded-full hover:bg-blue-50 transition-colors">
+                    Lanzar App
+                </a>
+            </div>
+        </nav>
+
+        <div class="w-full flex flex-col items-center">
+            
+            <section class="min-h-[85vh] flex flex-col items-center justify-center p-6 text-center max-w-5xl mx-auto relative">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold tracking-widest uppercase mb-8 animate-[slideUp_0.8s_ease-out]">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    System Online v2.1
                 </div>
                 
-                <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <label class="text-xs text-slate-500 dark:text-slate-400 font-bold">Topología (Colas Generales)</label>
-                    <input type="number" id="inp-queues" value="3" min="1" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm mt-1 text-slate-700 dark:text-white transition-colors focus:ring-2 focus:ring-blue-500 outline-none">
+                <h1 class="font-display text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter drop-shadow-2xl leading-tight">
+                    Simulación de <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Alto Rendimiento</span>
+                </h1>
+                
+                <p class="text-slate-400 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto leading-relaxed mb-10">
+                    Analiza colas, optimiza costos y predice el comportamiento humano con nuestro motor estocástico de última generación.
+                </p>
+
+                <div class="flex flex-col md:flex-row gap-4 mb-16">
+                    <a href="#models" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition-all hover:scale-105 flex items-center justify-center gap-2">
+                        <span class="material-icons-round">play_arrow</span> Iniciar Simulación
+                    </a>
+                    <a href="#tech-specs" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-2">
+                        <span class="material-icons-round">code</span> Ver Arquitectura
+                    </a>
+                </div>
+
+                <div class="w-full grid grid-cols-2 md:grid-cols-4 gap-8 py-8 border-t border-white/5">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-white mb-1">10k+</div>
+                        <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Simulaciones</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-white mb-1">99.9%</div>
+                        <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Precisión Poisson</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-white mb-1">&lt;50ms</div>
+                        <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Latencia de Motor</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-white mb-1">WebGL</div>
+                        <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Render Nativo</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" class="w-full py-24 border-y border-white/5 bg-slate-900/50">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="text-center mb-16">
+                        <h2 class="text-3xl font-display font-bold text-white mb-4">Potencia Industrial</h2>
+                        <p class="text-slate-400 max-w-xl mx-auto">Diseñado para ingenieros y analistas que requieren precisión matemática.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="p-8 rounded-2xl bg-slate-800/20 border border-slate-700/50 hover:border-blue-500/30 transition-colors group">
+                            <div class="w-12 h-12 bg-blue-900/30 rounded-lg flex items-center justify-center mb-6 text-blue-400 group-hover:text-blue-300">
+                                <span class="material-icons-round text-2xl">view_in_ar</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3">Visualización 3D</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Renderizado en tiempo real de entidades, colas y servidores utilizando WebGL para un análisis espacial inmediato.</p>
+                        </div>
+                        <div class="p-8 rounded-2xl bg-slate-800/20 border border-slate-700/50 hover:border-emerald-500/30 transition-colors group">
+                            <div class="w-12 h-12 bg-emerald-900/30 rounded-lg flex items-center justify-center mb-6 text-emerald-400 group-hover:text-emerald-300">
+                                <span class="material-icons-round text-2xl">payments</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3">Impacto Financiero</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Cálculo dinámico de ROI, costos operativos y pérdidas por oportunidad en base a parámetros configurables.</p>
+                        </div>
+                        <div class="p-8 rounded-2xl bg-slate-800/20 border border-slate-700/50 hover:border-purple-500/30 transition-colors group">
+                            <div class="w-12 h-12 bg-purple-900/30 rounded-lg flex items-center justify-center mb-6 text-purple-400 group-hover:text-purple-300">
+                                <span class="material-icons-round text-2xl">psychology</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-3">Factor Humano</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed">Algoritmos de impaciencia (Reneging) y rechazo (Balking) que simulan el comportamiento real del cliente.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="industries" class="w-full py-24 bg-slate-950">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <div>
+                            <span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase mb-2 block">Aplicaciones Reales</span>
+                            <h2 class="text-4xl font-display font-bold text-white mb-6">Optimizado para entornos críticos</h2>
+                            <p class="text-slate-400 mb-8 leading-relaxed">
+                                Desde el sector bancario hasta la logística sanitaria, MMM.config adapta sus modelos matemáticos para resolver problemas de congestión reales.
+                            </p>
+                            
+                            <div class="space-y-6">
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 text-white shrink-0">
+                                        <span class="material-icons-round">account_balance</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold">Banca y Finanzas</h4>
+                                        <p class="text-sm text-slate-500">Optimización de ventanillas y reducción de tiempos de espera en horas pico.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 text-white shrink-0">
+                                        <span class="material-icons-round">local_hospital</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold">Salud y Clínicas</h4>
+                                        <p class="text-sm text-slate-500">Gestión de flujo de pacientes en triaje y asignación de consultorios.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 text-white shrink-0">
+                                        <span class="material-icons-round">shopping_cart</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-bold">Retail</h4>
+                                        <p class="text-sm text-slate-500">Balanceo de cajas rápidas vs. tradicionales para maximizar el ROI.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 rounded-3xl blur-2xl"></div>
+                            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden h-96 flex items-center justify-center">
+                                <div class="grid grid-cols-3 gap-4 opacity-50">
+                                    <div class="w-20 h-32 bg-slate-800 rounded-lg animate-pulse"></div>
+                                    <div class="w-20 h-24 bg-blue-900/50 rounded-lg mt-8"></div>
+                                    <div class="w-20 h-40 bg-slate-800 rounded-lg"></div>
+                                </div>
+                                <div class="absolute bottom-6 right-6 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-lg border border-slate-700 text-xs font-mono text-white">
+                                    System Status: Optimal
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tech-specs" class="w-full py-24 px-6 flex justify-center">
+                <div class="w-full max-w-6xl bg-slate-800/40 backdrop-blur-xl border border-slate-700 rounded-3xl p-1 md:p-10 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10 p-6">
+                        <div class="space-y-8 flex flex-col justify-center">
+                            <div>
+                                <h4 class="text-blue-500 font-mono font-bold text-xs uppercase tracking-widest mb-2">Engine Architecture</h4>
+                                <h2 class="text-4xl font-display font-bold text-white mb-4">Lógica Estocástica</h2>
+                                <p class="text-slate-300 leading-loose text-justify">
+                                    El núcleo <strong>MMM</strong> opera sobre un bucle de simulación delta-time. Integramos variables aleatorias para los tiempos de llegada (Poisson) y servicio (Exponencial).
+                                </p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                                    <div class="text-2xl font-bold text-white mb-1">M/M/s</div>
+                                    <div class="text-xs text-slate-500 font-mono">Notación Kendall</div>
+                                </div>
+                                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                                    <div class="text-2xl font-bold text-white mb-1">60FPS</div>
+                                    <div class="text-xs text-slate-500 font-mono">Tasa de Refresco</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                            <div class="relative bg-slate-950 rounded-xl p-6 border border-slate-800 font-mono text-sm shadow-2xl">
+                                <div class="flex items-center gap-2 mb-6 border-b border-slate-800 pb-4">
+                                    <div class="text-slate-500 text-xs ml-2">core_math_module.js</div>
+                                </div>
+                                <div class="space-y-4 text-slate-300">
+                                    <div class="flex justify-between items-center p-2 hover:bg-slate-900 rounded transition-colors">
+                                        <span class="text-purple-400">const</span> <span>utilization</span>
+                                        <span class="text-slate-500">// ρ = λ / (s · μ)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 hover:bg-slate-900 rounded transition-colors">
+                                        <span class="text-purple-400">const</span> <span>littlesLaw</span>
+                                        <span class="text-slate-500">// L = λ · W</span>
+                                    </div>
+                                    <div class="flex justify-between items-center p-2 hover:bg-slate-900 rounded transition-colors border-t border-slate-800 mt-2 pt-4">
+                                        <span class="text-emerald-400">return</span> <span>totalCost</span>
+                                        <span class="text-emerald-500 font-bold">TC = Cqh + Cws</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="faq" class="w-full py-24 bg-slate-950/50 border-t border-slate-900">
+                <div class="max-w-4xl mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl font-display font-bold text-white mb-2">Preguntas Frecuentes</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                            <h4 class="text-white font-bold mb-2">¿Qué es un sistema M/M/s?</h4>
+                            <p class="text-slate-400 text-sm">Describe un sistema con llegadas Poisson, tiempos de servicio Exponenciales y 's' servidores.</p>
+                        </div>
+                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                            <h4 class="text-white font-bold mb-2">¿Cómo funciona el ROI?</h4>
+                            <p class="text-slate-400 text-sm">Se calcula contrastando el Ticket Promedio vs el costo operativo durante la simulación.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="models" class="w-full max-w-6xl px-6 py-24">
+                <div class="text-center mb-16">
+                    <span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Launchpad</span>
+                    <h2 class="text-4xl font-display font-bold text-white mt-2 mb-4">Seleccionar Entorno</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div onclick="enterApp('standard')" class="group cursor-pointer bg-slate-800/40 backdrop-blur-sm border border-slate-700 hover:border-blue-500 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-2 shadow-xl hover:shadow-blue-500/20 relative overflow-hidden flex flex-col h-full">
+                        <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors border border-blue-500/20">
+                            <span class="material-icons-round text-3xl">query_stats</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Modelo Ingeniería</h3>
+                        <p class="text-slate-400 text-sm mb-8 flex-1">Cálculo puro de M/M/s para dimensionamiento y evaluación de costos operativos.</p>
+                        <div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between text-blue-400 text-sm font-bold">
+                            <span>INICIAR SISTEMA</span>
+                            <span class="material-icons-round transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </div>
+                    </div>
+
+                    <div onclick="enterApp('psych')" class="group cursor-pointer bg-slate-800/40 backdrop-blur-sm border border-slate-700 hover:border-purple-500 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-2 shadow-xl hover:shadow-purple-500/20 relative overflow-hidden flex flex-col h-full">
+                        <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors border border-purple-500/20">
+                            <span class="material-icons-round text-3xl">psychology</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-3">Modelo Conductual</h3>
+                        <p class="text-slate-400 text-sm mb-8 flex-1">Simula impaciencia (Reneging) y rechazo (Balking). Ideal para analizar pérdida de clientes.</p>
+                        <div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between text-purple-400 text-sm font-bold">
+                            <span>INICIAR SISTEMA</span>
+                            <span class="material-icons-round transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        </div>
+                    </div>
+
+                    <div class="group relative bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 cursor-not-allowed opacity-60 overflow-hidden flex flex-col h-full">
+                        <div class="absolute top-4 right-4 bg-slate-800 text-slate-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-slate-700">Próximamente</div>
+                        <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 text-slate-600 border border-slate-700">
+                            <span class="material-icons-round text-3xl">science</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-500 mb-3">Modelo Experimental</h3>
+                        <p class="text-slate-600 text-sm mb-8 flex-1">Redes de Jackson abiertas y cerradas con múltiples nodos de servicio interconectados.</p>
+                        <div class="mt-auto pt-6 border-t border-slate-800 flex items-center justify-between text-slate-700 text-sm font-bold">
+                            <span>NO DISPONIBLE</span>
+                            <span class="material-icons-round">lock</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="w-full border-t border-slate-800 bg-slate-950/50 py-12 mt-12">
+                <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 text-left">
+                    <div class="col-span-1 md:col-span-2">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs">M</div>
+                            <span class="font-bold text-white">MMM.config</span>
+                        </div>
+                        <p class="text-slate-500 text-sm max-w-xs">Suite de simulación avanzada para análisis de colas y optimización de recursos empresariales.</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-4 font-display">Plataforma</h4>
+                        <ul class="space-y-2 text-sm text-slate-400 font-mono">
+                            <li><a href="pages/docs.html" class="hover:text-blue-400 transition-colors">Documentación</a></li>
+                            <li><a href="pages/api.html" class="hover:text-blue-400 transition-colors">API Reference</a></li>
+                            <li><a href="pages/status.html" class="hover:text-blue-400 transition-colors flex items-center gap-2">Status <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span></a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-4 font-display">Legal</h4>
+                        <ul class="space-y-2 text-sm text-slate-400 font-mono">
+                            <li><a href="pages/privacy.html" class="hover:text-blue-400 transition-colors">Privacidad</a></li>
+                            <li><a href="pages/terms.html" class="hover:text-blue-400 transition-colors">Términos</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-slate-900 text-center text-xs text-slate-600 font-mono uppercase tracking-widest">
+                    &copy; 2026 MMM.Config System v2.1 // All systems operational
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col z-40 shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-800">
+            <h2 class="font-display font-black text-2xl tracking-tight dark:text-white">MMM<span class="text-blue-500">.config</span></h2>
+            <div id="mode-badge" class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-widest bg-slate-100 text-slate-500 uppercase">STANDBY</div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-700 pb-2">Capacidad Base</h3>
+                <div><label class="text-xs text-slate-500 mb-1 block">Llegada (λ) Clientes/h</label><input type="number" id="inp-lambda" value="40" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                <div><label class="text-xs text-slate-500 mb-1 block">Atención (μ) Clientes/h</label><input type="number" id="inp-mu" value="15" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-slate-500 mb-1 block">Servidores</label><input type="number" id="inp-servers" value="5" min="1" max="20" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label class="text-xs text-slate-500 mb-1 block">Colas</label><input type="number" id="inp-queues" value="3" min="1" max="10" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-700 pb-2">Finanzas & Segmentación</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-emerald-500 font-bold mb-1 block">Cajas VIP</label><input type="number" id="inp-vip-servers" value="1" min="0" class="w-full bg-slate-100 dark:bg-slate-800 border border-emerald-500/30 rounded-lg p-2.5 text-sm font-bold dark:text-white outline-none"></div>
+                    <div><label class="text-xs text-emerald-500 font-bold mb-1 block">% Clientes VIP</label><input type="number" id="inp-vip-percent" value="30" min="0" max="100" class="w-full bg-slate-100 dark:bg-slate-800 border border-emerald-500/30 rounded-lg p-2.5 text-sm font-bold dark:text-white outline-none"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-slate-500 mb-1 block">Ticket Prom ($)</label><input type="number" id="inp-ticket" value="25.00" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label class="text-xs text-slate-500 mb-1 block">Costo Insumo ($)</label><input type="number" id="inp-cost" value="2.50" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                </div>
+            </div>
+            <div>
+                <label class="text-xs text-slate-500 mb-1 block">Horas a Simular</label>
+                <input type="range" id="inp-hours-range" min="1" max="24" value="8" class="w-full accent-blue-500 h-1 bg-slate-200 rounded-lg cursor-pointer">
+                <div class="flex justify-between text-xs text-slate-400 font-mono mt-1"><span id="lbl-hours">8h</span> <span>24h</span></div>
+            </div>
+            <div id="psych-controls" class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800 hidden">
+                <h3 class="text-xs font-bold text-purple-400 uppercase tracking-wider">Factor Humano</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-slate-500 mb-1 block">Paciencia (min)</label><input type="number" id="inp-patience" value="15" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label class="text-xs text-slate-500 mb-1 block">Tol. Fila (Per)</label><input type="number" id="inp-tolerance" value="8" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
                 </div>
             </div>
         </div>
-
-        <div class="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 space-y-3 pb-8 lg:pb-6">
-            <button id="btn-start" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95">
-                <span class="material-icons-round">play_arrow</span> INICIAR
-            </button>
-            <button id="btn-pause" disabled class="w-full bg-amber-500 hover:bg-amber-400 disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:text-slate-400 text-white p-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95">
-                <span class="material-icons-round">pause</span> PAUSAR
-            </button>
+        <div class="p-6 bg-slate-50 dark:bg-slate-800/50 space-y-3">
+            <button id="btn-start" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"><span class="material-icons-round">play_arrow</span> INICIAR</button>
+            <div class="grid grid-cols-2 gap-3">
+                <button id="btn-pause" disabled class="bg-white dark:bg-slate-700 text-slate-600 dark:text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-600 disabled:opacity-50"><span class="material-icons-round text-sm">pause</span> PAUSA</button>
+                <button onclick="window.returnToMenu()" class="bg-white dark:bg-slate-700 text-slate-600 dark:text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-600 hover:text-red-400"><span class="material-icons-round text-sm">logout</span> SALIR</button>
+            </div>
         </div>
     </aside>
 
-    <main class="flex-1 relative bg-slate-100 dark:bg-slate-950 overflow-hidden transition-colors duration-300 w-full">
-        
-        <button onclick="toggleSidebar()" class="lg:hidden absolute top-4 left-4 z-20 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-md text-slate-700 dark:text-white">
-            <span class="material-icons-round">menu</span>
-        </button>
-
-        <div class="absolute top-16 left-4 right-4 lg:top-4 lg:left-4 lg:right-4 glass-panel rounded-xl p-3 flex flex-col lg:flex-row justify-between items-center z-10 shadow-sm gap-3 lg:gap-0 max-h-[30vh] overflow-y-auto lg:overflow-visible">
-            
-            <div class="flex flex-col lg:flex-row items-center gap-3 lg:gap-6 w-full lg:w-auto">
-                <div class="flex items-center justify-between w-full lg:w-auto gap-3 px-4 py-2 bg-white/50 dark:bg-slate-900/80 rounded-lg border border-slate-200 dark:border-slate-700">
-                    <div id="status-indicator" class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
-                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400">ESPERA</span>
-                    </div>
-                    <div class="h-4 w-px bg-slate-300 dark:bg-slate-700"></div>
-                    <span id="clock-display" class="font-mono text-xl font-bold text-blue-600 dark:text-blue-400 transition-colors">00:00</span>
-                </div>
-
-                <div class="flex justify-around w-full lg:w-auto gap-6 text-sm bg-white/30 dark:bg-slate-900/50 p-2 rounded-lg lg:bg-transparent lg:p-0">
-                    <div class="text-center lg:text-left">
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Fila Pref.</span>
-                        <div class="text-fuchsia-600 dark:text-fuchsia-400 font-mono text-xl font-bold" id="count-pref">0</div>
-                    </div>
-                    <div class="text-center lg:text-left">
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Filas Gral.</span>
-                        <div class="text-amber-600 dark:text-amber-500 font-mono text-xl font-bold" id="count-gen">0</div>
-                    </div>
+    <main class="flex-1 relative flex flex-col min-w-0">
+        <div class="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
+            <button onclick="toggleSidebar()" class="pointer-events-auto lg:hidden bg-white dark:bg-slate-800 p-2 rounded-lg shadow-lg text-slate-700 dark:text-white"><span class="material-icons-round">menu</span></button>
+            <div class="glass-panel pointer-events-auto p-2 pr-4 rounded-xl flex items-center gap-4 shadow-xl border border-white/10 ml-auto">
+                <div class="flex flex-col items-center px-2 border-r border-slate-500/20"><span class="text-[10px] font-bold text-slate-400 uppercase">Reloj</span><span id="clock-display" class="font-mono text-xl font-bold text-slate-800 dark:text-white">00:00</span></div>
+                <div id="panel-overtime" class="hidden flex flex-col items-center px-2 border-r border-slate-500/20 animate-pulse text-red-500"><span class="text-[10px] font-bold uppercase tracking-wider">EXTRA!</span><span id="overtime-timer" class="font-mono text-lg font-bold">00:00</span></div>
+                <div class="flex gap-4">
+                    <div><span class="text-[10px] font-bold text-fuchsia-400 uppercase block">VIP</span><span id="count-pref" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0</span></div>
+                    <div><span class="text-[10px] font-bold text-amber-400 uppercase block">GRAL</span><span id="count-gen" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0</span></div>
+                    <div id="stat-abandon" class="hidden"><span class="text-[10px] font-bold text-red-400 uppercase block">FUGAS</span><span id="count-loss" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0</span></div>
                 </div>
             </div>
-
-            <div class="flex gap-2 w-full lg:w-auto justify-center">
-                <button id="btn-speed" class="flex-1 lg:flex-none justify-center px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2 shadow-sm transition-colors">
-                    <span class="material-icons-round text-sm">speed</span> 
-                    <span id="txt-speed">x1</span>
-                </button>
-                <button id="btn-theme" class="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-600 dark:text-yellow-400 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors" title="Cambiar Tema">
-                    <span class="material-icons-round text-sm" id="icon-theme">dark_mode</span>
-                </button>
-                <button id="btn-pico" disabled class="flex-1 lg:flex-none justify-center px-3 py-2 bg-red-900/10 text-red-800/50 border border-red-900/20 rounded-lg text-xs font-bold cursor-not-allowed flex items-center gap-2 transition-all">
-                    <span class="material-icons-round text-sm">local_fire_department</span> <span class="hidden sm:inline">PICO</span>
-                </button>
+        </div>
+        <div class="absolute bottom-4 left-4 z-20 flex flex-col gap-2 pointer-events-auto">
+             <button id="btn-theme" class="w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-yellow-400 rounded-full flex items-center justify-center shadow-lg border border-slate-200 dark:border-slate-700 hover:scale-110 transition-transform"><span class="material-icons-round text-xl">light_mode</span></button>
+             <button id="btn-speed" class="px-3 py-2 bg-slate-800 text-white rounded-full flex items-center gap-1 shadow-lg border border-slate-700 font-bold text-xs"><span class="material-icons-round text-sm">speed</span> <span id="txt-speed">x1</span></button>
+        </div>
+        <div class="absolute bottom-4 right-4 z-20 pointer-events-auto">
+            <button id="btn-pico" class="bg-gradient-to-r from-red-600 to-orange-500 hover:scale-105 active:scale-95 text-white font-black px-4 py-3 rounded-full shadow-xl shadow-red-500/30 flex items-center gap-2 transition-all"><span class="material-icons-round text-lg animate-pulse">local_fire_department</span> HORA PICO</button>
+        </div>
+        <div id="canvas-container" class="w-full h-full relative"></div>
+        <div id="results-trigger" class="hidden absolute inset-0 z-50 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center p-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative overflow-hidden text-center">
+                <div class="relative z-10">
+                    <h2 class="text-3xl font-black text-white mb-2">Simulación Completada</h2>
+                    <p class="text-slate-400 mb-8">El periodo operativo ha finalizado.</p>
+                    <button onclick="window.openReport()" class="w-full bg-white hover:bg-slate-200 text-slate-900 font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">VER REPORTE IA <span class="material-icons-round">arrow_forward</span></button>
+                </div>
             </div>
         </div>
-
-        <div id="canvas-container" class="w-full h-full touch-none"></div>
-
-        <div id="chart-container-wrapper" class="glass-panel p-2 lg:p-4 flex flex-col justify-end transition-colors duration-300 absolute bottom-0 left-0 right-0 h-32 lg:h-48 rounded-t-xl lg:rounded-xl lg:m-4">
-            <div class="flex justify-between items-center mb-1 px-2">
-                <h3 class="text-[10px] lg:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase flex items-center gap-2">
-                    <span class="material-icons-round text-sm">show_chart</span> En Vivo
-                </h3>
-            </div>
-            <div class="w-full h-full relative">
-                <canvas id="realtimeChart"></canvas>
-            </div>
-        </div>
-
-        <div id="results-trigger" class="hidden absolute inset-0 bg-white/80 dark:bg-slate-900/80 z-30 flex items-center justify-center backdrop-blur-sm transition-colors duration-300 px-4">
-            <div class="text-center p-6 lg:p-8 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-2xl shadow-2xl w-full max-w-sm lg:max-w-lg">
-                <div class="text-5xl lg:text-6xl mb-4">🏁</div>
-                <h2 class="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white mb-2">Simulación Finalizada</h2>
-                <p class="text-slate-600 dark:text-slate-300 mb-6 text-sm lg:text-base">Los datos han sido procesados correctamente.</p>
-                <button onclick="window.openReport()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white px-6 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-emerald-500/20 transition-all flex items-center justify-center gap-3">
-                    <span class="material-icons-round">assessment</span> ABRIR INFORME IA
-                </button>
+        <div id="report-modal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="bg-slate-50 dark:bg-slate-900 w-full max-w-6xl h-[90vh] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
+                <button onclick="window.closeReport()" class="absolute top-4 right-4 z-20 bg-slate-200 dark:bg-slate-800 p-2 rounded-full hover:bg-red-500 hover:text-white transition-colors shadow-lg border border-slate-700"><span class="material-icons-round">close</span></button>
+                <div class="overflow-y-auto p-8 custom-scroll flex-1">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="bg-blue-600 p-3 rounded-lg"><span class="material-icons-round text-white text-2xl">analytics</span></div>
+                        <div><h2 class="text-2xl font-bold dark:text-white text-slate-800">Reporte Ejecutivo</h2><p class="text-slate-500 text-sm">Análisis de rendimiento y costos operativos</p></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="flip-group h-40 cursor-pointer">
+                            <div class="flip-inner">
+                                <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">Atención Total</span><span id="rep-total" class="text-4xl font-mono font-bold text-white">0</span></div>
+                                <div class="flip-back bg-slate-900 border border-blue-500/30 rounded-xl p-4 flex items-center justify-center text-center text-xs text-slate-300"><p>Volumen neto de clientes procesados.</p></div>
+                            </div>
+                        </div>
+                        <div class="flip-group h-40 cursor-pointer">
+                            <div class="flip-inner">
+                                <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">Ingresos Brutos</span><span id="rep-revenue" class="text-4xl font-mono font-bold text-emerald-400">$0</span></div>
+                                <div class="flip-back bg-slate-900 border border-emerald-500/30 rounded-xl p-4 flex items-center justify-center text-center text-xs text-slate-300"><p>Total facturado.</p></div>
+                            </div>
+                        </div>
+                        <div class="flip-group h-40 cursor-pointer">
+                            <div class="flip-inner">
+                                <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">Costo Operativo</span><span id="rep-cost" class="text-4xl font-mono font-bold text-rose-400">$0</span></div>
+                                <div class="flip-back bg-slate-900 border border-rose-500/30 rounded-xl p-4 flex items-center justify-center text-center text-xs text-slate-300"><p>Salarios + Insumos + Sobrecostos.</p></div>
+                            </div>
+                        </div>
+                        <div class="flip-group h-40 cursor-pointer">
+                            <div class="flip-inner">
+                                <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">ROI Neto</span><span id="rep-profit" class="text-4xl font-mono font-bold text-white">$0</span></div>
+                                <div class="flip-back bg-slate-900 border border-indigo-500/30 rounded-xl p-4 flex items-center justify-center text-center text-xs text-slate-300"><p>Rentabilidad real.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <h4 class="text-sm font-bold text-slate-400 uppercase mb-3 font-display">Métricas de Calidad & Eficiencia</h4>
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <table class="w-full text-sm text-left text-slate-500 dark:text-slate-400">
+                                <thead class="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-300"><tr><th class="px-6 py-3">Indicador</th><th class="px-6 py-3">Valor</th><th class="px-6 py-3">Impacto</th></tr></thead>
+                                <tbody>
+                                    <tr class="bg-white border-b dark:bg-slate-800 dark:border-slate-700"><td class="px-6 py-4 font-medium dark:text-white">Tiempo Promedio Espera</td><td id="rep-avg-wait" class="px-6 py-4 font-mono text-blue-400">--</td><td class="px-6 py-4">Satisfacción</td></tr>
+                                    <tr class="bg-white border-b dark:bg-slate-800 dark:border-slate-700"><td class="px-6 py-4 font-medium dark:text-white">Largo Máximo de Cola</td><td id="rep-max-q" class="px-6 py-4 font-mono text-amber-400">--</td><td class="px-6 py-4">Espacio / Estrés</td></tr>
+                                    <tr class="bg-white border-b dark:bg-slate-800 dark:border-slate-700"><td class="px-6 py-4 font-medium dark:text-white">Ocupación de Personal</td><td id="rep-utilization" class="px-6 py-4 font-mono text-emerald-400">--</td><td class="px-6 py-4">Eficiencia</td></tr>
+                                    <tr id="rep-overtime-row" class="bg-amber-50 dark:bg-amber-900/10 border-b dark:border-amber-900/30 hidden"><td class="px-6 py-4 font-bold text-amber-600 dark:text-amber-400">Sobrecosto (Horas Extra)</td><td class="px-6 py-4 font-mono text-amber-500"><span id="rep-overtime-val">0h</span> (<span id="rep-overtime-cost">$0</span>)</td><td class="px-6 py-4 text-amber-500">Gasto en Nómina</td></tr>
+                                    <tr id="rep-lost-row" class="bg-red-50 dark:bg-red-900/10 border-b dark:border-red-900/30 hidden"><td class="px-6 py-4 font-bold text-red-600 dark:text-red-400">Clientes Perdidos</td><td class="px-6 py-4 font-mono text-red-500"><span id="rep-lost-clients">0</span> (<span id="rep-lost-money">$0</span>)</td><td class="px-6 py-4 text-red-500">Pérdida de Ventas</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="lg:col-span-1 bg-slate-800 p-6 rounded-xl border border-slate-700 h-80 flex flex-col">
+                            <h4 class="text-sm font-bold text-slate-400 uppercase mb-4 font-display">Distribución</h4>
+                            <div class="flex-1 relative w-full h-full"><canvas id="finalChart"></canvas></div>
+                        </div>
+                        <div class="lg:col-span-2 bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-xl border border-slate-700 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-6 opacity-5 pointer-events-none"><span class="material-icons-round text-9xl text-white">psychology</span></div>
+                            <h3 class="relative z-10 text-xl font-bold text-white mb-6 flex items-center gap-2"><span class="material-icons-round text-blue-500">smart_toy</span> Diagnóstico Inteligente</h3>
+                            <div id="ai-consultant-content" class="relative z-10 space-y-6 text-sm text-slate-300 leading-relaxed text-justify"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-slate-800 bg-slate-900 flex justify-end gap-3">
+                    <button onclick="window.returnToMenu()" class="px-6 py-3 bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:text-red-400 rounded-lg font-bold border border-transparent transition-colors flex items-center gap-2"><span class="material-icons-round text-sm">restart_alt</span> NUEVA SIMULACIÓN</button>
+                    <button onclick="window.closeReport()" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2"><span class="material-icons-round text-sm">map</span> VOLVER AL MAPA 3D</button>
+                </div>
             </div>
         </div>
     </main>
 
-    <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 lg:p-6 modal-enter">
-        <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6 overflow-y-auto max-h-[85dvh] custom-scroll">
-            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-4">
-                <span class="material-icons-round text-blue-500">tune</span> Ajustes Avanzados
-            </h3>
-            
-            <div class="space-y-6">
-                <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600">
-                    <label class="text-xs font-bold text-blue-500 dark:text-blue-400 uppercase flex items-center gap-2 mb-2">
-                        <span class="material-icons-round text-sm">schedule</span> Jornada Laboral
-                    </label>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="inp-hours" value="8" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm text-slate-800 dark:text-white font-bold transition-colors focus:ring-2 focus:ring-blue-500 outline-none">
-                        <span class="text-sm text-slate-500 dark:text-slate-400 font-bold">Horas</span>
-                    </div>
-                </div>
-
-                <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600">
-                    <label class="text-xs font-bold text-blue-500 dark:text-blue-400 uppercase flex items-center gap-2 mb-3">
-                        <span class="material-icons-round text-sm">priority_high</span> Tráfico Preferencial
-                    </label>
-                    
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Sub-tasa Llegada</label>
-                            <div class="flex items-center gap-2 mt-1">
-                                <input type="number" id="inp-pref" value="5" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm text-slate-800 dark:text-white font-bold transition-colors focus:ring-2 focus:ring-blue-500 outline-none">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Densidad (1xN)</label>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-xs text-blue-600 dark:text-blue-400 font-bold">N°</span>
-                                <input type="number" id="inp-vip-step" value="3" min="1" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm text-slate-800 dark:text-white font-bold transition-colors focus:ring-2 focus:ring-blue-500 outline-none">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="text-xs text-slate-400 uppercase font-bold mb-3 flex items-center gap-2">
-                        <span class="material-icons-round text-sm">attach_money</span> Financiero
-                    </h4>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Sueldo/Hora</label>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="text-slate-400">$</span>
-                                    <input type="number" id="cost-salary" value="15.00" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm text-slate-800 dark:text-white outline-none">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Costo Op.</label>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="text-slate-400">$</span>
-                                    <input type="number" id="cost-client" value="0.50" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm text-slate-800 dark:text-white outline-none">
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Ticket Promedio</label>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-emerald-600 font-bold">$</span>
-                                <input type="number" id="cost-revenue" value="20.00" class="w-full bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700 rounded p-2 text-sm text-slate-800 dark:text-white font-bold outline-none">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Presupuesto</label>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-slate-400">$</span>
-                                <input type="number" id="cost-budget" value="1000.00" class="w-full bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded p-2 text-sm text-slate-800 dark:text-white outline-none">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 sticky bottom-0">
-                <button onclick="document.getElementById('settings-modal').classList.add('hidden')" class="px-4 py-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white font-bold text-sm transition-colors">Cancelar</button>
-                <button onclick="window.saveSettings()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl font-bold text-sm shadow-lg hover:shadow-blue-500/30 transition-all transform active:scale-95">Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="report-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-md flex items-center justify-center p-2 lg:p-6">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-7xl h-full max-h-[98dvh] rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden modal-enter relative transition-colors duration-300">
-            <button onclick="window.closeReport()" class="absolute top-2 right-2 z-20 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-white p-2 rounded-full transition-colors">
-                <span class="material-icons-round">close</span>
-            </button>
-            
-            <div class="overflow-y-auto p-4 lg:p-8 h-full custom-scroll">
-                <h2 class="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
-                    <span class="material-icons-round text-blue-600 dark:text-blue-500 text-3xl lg:text-4xl">analytics</span> 
-                    Reporte IA
-                </h2>
-                
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-6">
-                    <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
-                        <span class="text-[9px] lg:text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Atendidos</span>
-                        <div class="text-xl lg:text-2xl font-mono font-bold text-slate-800 dark:text-white mt-1" id="rep-total">0</div>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-center relative overflow-hidden">
-                        <span class="text-[9px] lg:text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold relative z-10">Costo</span>
-                        <div class="text-xl lg:text-2xl font-mono font-bold text-red-500 mt-1 relative z-10" id="rep-cost">$0</div>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-center">
-                        <span class="text-[9px] lg:text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold">Ventas</span>
-                        <div class="text-xl lg:text-2xl font-mono font-bold text-blue-500 mt-1" id="rep-revenue">$0</div>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-center relative overflow-hidden">
-                        <div id="profit-bg" class="absolute inset-0 opacity-10"></div>
-                        <span class="text-[9px] lg:text-[10px] text-slate-500 dark:text-slate-400 uppercase font-bold relative z-10">ROI Neto</span>
-                        <div class="text-2xl lg:text-3xl font-mono font-bold mt-1 relative z-10" id="rep-profit">$0</div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6">
-                    <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
-                        <p class="text-[9px] uppercase text-slate-500 font-bold">Ocupación</p>
-                        <p id="adv-utilization" class="text-base font-mono font-bold text-purple-500">0%</p>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
-                        <p class="text-[9px] uppercase text-slate-500 font-bold">Espera Prom.</p>
-                        <p id="adv-wait" class="text-base font-mono font-bold text-blue-500">0 min</p>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
-                        <p class="text-[9px] uppercase text-slate-500 font-bold">Extra</p>
-                        <p id="adv-overtime" class="text-base font-mono font-bold text-orange-500">0 min</p>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 p-2 rounded-lg border border-slate-200 dark:border-slate-700">
-                        <p class="text-[9px] uppercase text-slate-500 font-bold">Costo Extra</p>
-                        <p id="adv-overtime-cost" class="text-base font-mono font-bold text-red-500">$0</p>
-                    </div>
-                </div>
-
-                <div class="bg-gradient-to-r from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 border border-indigo-500/30 p-4 lg:p-8 rounded-2xl mb-6 relative overflow-hidden">
-                    <div class="absolute -right-10 -top-10 text-indigo-500/10 rotate-12">
-                        <span class="material-icons-round" style="font-size: 150px;">psychology</span>
-                    </div>
-                    <h3 class="text-indigo-600 dark:text-indigo-400 font-bold text-lg mb-4 flex items-center gap-2">
-                        <span class="material-icons-round">auto_awesome</span> CONSULTOR VIRTUAL
-                    </h3>
-                    <div class="space-y-4 relative z-10">
-                        <div class="flex gap-4">
-                            <div class="w-1 bg-indigo-500 rounded-full shrink-0"></div>
-                            <div>
-                                <h4 class="text-slate-800 dark:text-white font-bold text-sm">Diagnóstico Financiero:</h4>
-                                <p id="ai-diag-finance" class="text-slate-600 dark:text-slate-300 text-xs lg:text-sm mt-1">Calculando...</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="w-1 bg-purple-500 rounded-full shrink-0"></div>
-                            <div>
-                                <h4 class="text-slate-800 dark:text-white font-bold text-sm">Eficiencia Operativa:</h4>
-                                <p id="ai-diag-ops" class="text-slate-600 dark:text-slate-300 text-xs lg:text-sm mt-1">Analizando...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2 lg:gap-4 mb-6">
-                     <div class="bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-xl border border-indigo-100 dark:border-indigo-800/30 flex flex-col items-center justify-center">
-                        <span class="text-[9px] text-indigo-600 dark:text-indigo-400 uppercase font-bold text-center">CUP</span>
-                        <div class="text-lg lg:text-2xl font-mono font-bold text-indigo-700 dark:text-indigo-300 mt-1" id="kpi-cost-unit">$0</div>
-                    </div>
-                    <div class="bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-xl border border-indigo-100 dark:border-indigo-800/30 flex flex-col items-center justify-center">
-                        <span class="text-[9px] text-indigo-600 dark:text-indigo-400 uppercase font-bold text-center">Prod.</span>
-                        <div class="text-lg lg:text-2xl font-mono font-bold text-indigo-700 dark:text-indigo-300 mt-1" id="kpi-productivity">0</div>
-                    </div>
-                    <div class="bg-indigo-50 dark:bg-indigo-900/20 p-2 rounded-xl border border-indigo-100 dark:border-indigo-800/30 flex flex-col items-center justify-center">
-                        <span class="text-[9px] text-indigo-600 dark:text-indigo-400 uppercase font-bold text-center">Ocio</span>
-                        <div class="text-lg lg:text-2xl font-mono font-bold text-indigo-700 dark:text-indigo-300 mt-1" id="kpi-idle">0%</div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-5 dark:bg-slate-800 rounded-2xl p-4 lg:p-6 border border-slate-200 dark:border-slate-700">
-                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase mb-4 flex items-center gap-2">
-                        <span class="material-icons-round">timeline</span> Demanda Histórica
-                    </h3>
-                    <div class="w-full h-[250px] lg:h-[400px]">
-                        <canvas id="finalChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script type="module" src="js/main.js"></script>
-    
-    <script>
-        function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const ov = document.getElementById('mobile-overlay');
-            if(sb.classList.contains('-translate-x-full')) {
-                sb.classList.remove('-translate-x-full');
-                ov.classList.remove('hidden');
-            } else {
-                sb.classList.add('-translate-x-full');
-                ov.classList.add('hidden');
-            }
-        }
-        
-        // Cerrar sidebar al iniciar simulación en móvil
-        document.getElementById('btn-start').addEventListener('click', () => {
-            if(window.innerWidth < 1024) toggleSidebar();
-        });
-    </script>
-
 </body>
 </html>

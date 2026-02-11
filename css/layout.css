@@ -25,3 +25,17 @@ canvas {
     display: block; 
     outline: none; 
 }
+
+html { 
+    scroll-behavior: smooth; 
+}
+
+/* Utilidad para ocultar scrollbars pero permitir desplazamiento */
+.no-scrollbar::-webkit-scrollbar { 
+    display: none; 
+}
+
+.no-scrollbar { 
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - MMM.config</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="../js/theme-config.js"></script>
+    <style>
+        .code-block { background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #334155; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300 font-sans h-screen flex flex-col">
+
+    <nav class="flex-none sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="../index.html" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black">M</div>
+                <span class="font-display font-bold text-lg text-white tracking-tight">MMM.config <span class="text-slate-500 font-light ml-2 text-sm uppercase font-mono tracking-widest">API</span></span>
+            </a>
+            <a href="../index.html" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-all flex items-center gap-2 border border-slate-700">
+                <span class="material-icons-round text-sm">logout</span> Salir
+            </a>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex overflow-hidden">
+        <aside class="w-64 flex-none border-r border-slate-800 bg-slate-950 hidden lg:block overflow-y-auto sidebar-scroll p-6">
+            <div class="space-y-8">
+                <div>
+                    <h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Core Objects</h5>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#state" class="hover:text-blue-400 transition-colors">Global State</a></li>
+                        <li><a href="#engine" class="hover:text-blue-400 transition-colors">QueueEngine Instance</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Methods</h5>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#step" class="hover:text-blue-400 transition-colors">.step(dt)</a></li>
+                        <li><a href="#stats" class="hover:text-blue-400 transition-colors">.getStats()</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Entities</h5>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#client" class="hover:text-blue-400 transition-colors">Client Schema</a></li>
+                        <li><a href="#server" class="hover:text-blue-400 transition-colors">Server Schema</a></li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-8 lg:p-16 scroll-smooth">
+            <div class="max-w-4xl mx-auto space-y-20">
+                
+                <header>
+                    <h1 class="text-4xl font-bold text-white mb-4 tracking-tight">Referencia de la API Interna</h1>
+                    <p class="text-slate-400 text-lg leading-relaxed">
+                        MMM.config expone una API interna estructurada para el control dinámico de la simulación. Puede interactuar con el motor directamente desde la consola o mediante hooks de integración.
+                    </p>
+                </header>
+
+                <section id="state">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span> Objeto Global STATE
+                    </h2>
+                    <p class="mb-4">Este objeto mantiene el contexto de ejecución de la aplicación.</p>
+                    <div class="code-block">
+                        <pre class="text-blue-300">
+{
+  engine: <span class="text-slate-500">QueueEngine</span>,  <span class="text-slate-500">// Instancia del motor activo</span>
+  isPaused: <span class="text-emerald-400">Boolean</span>,     <span class="text-slate-500">// Estado de pausa</span>
+  speed: <span class="text-emerald-400">Number</span>,        <span class="text-slate-500">// Delta time multiplier (0.01 = x1)</span>
+  mode: <span class="text-emerald-400">String</span>          <span class="text-slate-500">// 'standard' | 'psych'</span>
+}</pre>
+                    </div>
+                </section>
+
+                <section id="engine">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-purple-500 rounded-full"></span> Métodos del QueueEngine
+                    </h2>
+                    
+                    <div id="step" class="mb-10">
+                        <h4 class="text-emerald-400 font-mono font-bold mb-2">.step(dt)</h4>
+                        <p class="text-sm text-slate-400 mb-4">Avanza la lógica de simulación un paso en el tiempo.</p>
+                        <div class="code-block text-xs">
+                            <span class="text-slate-500">// dt: valor incremental de tiempo basado en FPS y velocidad.</span><br>
+                            STATE.engine.step(0.01);
+                        </div>
+                    </div>
+
+                    <div id="stats">
+                        <h4 class="text-emerald-400 font-mono font-bold mb-2">.getStats()</h4>
+                        <p class="text-sm text-slate-400 mb-4">Retorna el volcado completo de métricas acumuladas hasta el momento.</p>
+                        <div class="code-block text-xs">
+                            <pre class="text-blue-300">
+{
+  atendidos: <span class="text-emerald-400">45</span>,
+  abandonos: <span class="text-emerald-400">3</span>,
+  utilization: <span class="text-emerald-400">0.82</span>,
+  overtime: <span class="text-emerald-400">0.05</span>,  <span class="text-slate-500">// Horas en tiempo extra</span>
+  avgWait: <span class="text-emerald-400">12.4</span>    <span class="text-slate-500">// Minutos</span>
+}</pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="client">
+                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-1.5 h-6 bg-orange-500 rounded-full"></span> Esquemas de Datos
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="p-6 bg-slate-800/30 border border-slate-800 rounded-xl">
+                            <h5 class="text-white font-bold mb-3">Client Object</h5>
+                            <ul class="text-xs space-y-2 font-mono">
+                                <li>t: <span class="text-slate-500">Entry time</span></li>
+                                <li>type: <span class="text-slate-500">'PREF' | 'GEN'</span></li>
+                                <li>patience: <span class="text-slate-500">Wait limit</span></li>
+                            </ul>
+                        </div>
+                        <div class="p-6 bg-slate-800/30 border border-slate-800 rounded-xl">
+                            <h5 class="text-white font-bold mb-3">Server Object</h5>
+                            <ul class="text-xs space-y-2 font-mono">
+                                <li>id: <span class="text-slate-500">Integer</span></li>
+                                <li>busy: <span class="text-slate-500">Boolean</span></li>
+                                <li>timer: <span class="text-slate-500">Service countdown</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="pt-10 border-t border-slate-800 text-xs text-slate-600 font-mono">
+                    END OF API SPECIFICATION // BUILD_v2.1_FEB2026
+                </footer>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación - MMM.config</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@700;900&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <script src="../js/theme-config.js"></script>
+    <style>
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #334155; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300 font-sans h-screen flex flex-col">
+
+    <nav class="flex-none sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="../index.html" class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display">M</div>
+                <span class="font-display font-bold text-lg text-white tracking-tight">MMM.config <span class="text-slate-500 font-light ml-2">Docs</span></span>
+            </a>
+            <a href="../index.html" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-all flex items-center gap-2 border border-slate-700">
+                <span class="material-icons-round text-sm">logout</span> Salir
+            </a>
+        </div>
+    </nav>
+
+    <div class="flex-1 flex overflow-hidden">
+        <aside class="w-64 flex-none border-r border-slate-800 bg-slate-900/50 hidden md:block overflow-y-auto sidebar-scroll">
+            <div class="p-6 space-y-8">
+                <div>
+                    <h5 class="font-bold text-white text-sm mb-4">General</h5>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#intro" class="hover:text-blue-400 transition-colors">Introducción</a></li>
+                        <li><a href="#config" class="hover:text-blue-400 transition-colors">Configuración</a></li>
+                        <li><a href="#metrics" class="hover:text-blue-400 transition-colors">Métricas</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-white text-sm mb-4">Modelos</h5>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#model-eng" class="hover:text-white transition-colors">Ingeniería (M/M/s)</a></li>
+                        <li><a href="#model-psy" class="hover:text-white transition-colors">Conductual</a></li>
+                        <li><a href="#model-exp" class="text-purple-400 font-bold">Experimental <span class="text-[10px] bg-purple-500/20 px-1 rounded ml-1">BETA</span></a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-bold text-white text-sm mb-4">API</h5>
+                    <ul class="space-y-2 text-sm text-slate-400">
+                        <li><a href="#api-ref" class="hover:text-white transition-colors">Referencia JSON</a></li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-8 md:p-16 scroll-smooth">
+            <div class="max-w-3xl mx-auto space-y-16">
+                
+                <section id="intro">
+                    <h1 class="font-display text-4xl font-black text-white mb-6">Manual del Usuario v2.1</h1>
+                    <p class="text-lg text-slate-400 mb-6 leading-relaxed">
+                        MMM.config es una suite de simulación estocástica diseñada para optimizar sistemas de colas. Utiliza WebGL para renderizado en tiempo real y algoritmos basados en eventos discretos para calcular la eficiencia operativa.
+                    </p>
+                    <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 flex gap-3 items-start">
+                        <span class="material-icons-round text-blue-500 mt-1">info</span>
+                        <div class="text-sm text-slate-300">
+                            <strong>Requisito:</strong> Para simulaciones con más de 100 entidades simultáneas, se recomienda un navegador basado en Chromium (Chrome, Edge, Brave) con aceleración de hardware activada.
+                        </div>
+                    </div>
+                </section>
+
+                <section id="config">
+                    <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Configuración Básica</h2>
+                    <p class="text-slate-400 mb-4">Antes de iniciar, debes definir los parámetros de entrada en el panel lateral:</p>
+                    <ul class="list-disc pl-5 space-y-2 text-slate-400 mb-6">
+                        <li><strong>Lambda (λ):</strong> Tasa media de llegadas (clientes por hora).</li>
+                        <li><strong>Mu (μ):</strong> Tasa media de servicio por servidor (clientes por hora).</li>
+                        <li><strong>Servidores (s):</strong> Cantidad de nodos de atención activos.</li>
+                    </ul>
+                    <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-sm text-blue-300">
+                        // Ejemplo de configuración estable<br>
+                        λ = 40;  μ = 15;  s = 3;<br>
+                        <span class="text-slate-500">// Utilización ρ = 40 / (3*15) = 0.88 (88%)</span>
+                    </div>
+                </section>
+
+                <section id="model-eng">
+                    <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">1. Modelo de Ingeniería</h2>
+                    <p class="text-slate-400 mb-4">
+                        Basado en la teoría de colas clásica <strong>M/M/s</strong>. Asume colas infinitas, población infinita y disciplina FIFO (First In, First Out).
+                    </p>
+                    <p class="text-slate-400"><strong>Ideal para:</strong> Dimensionamiento inicial de infraestructura y cálculo de costos base.</p>
+                </section>
+
+                <section id="model-psy">
+                    <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">2. Modelo Conductual</h2>
+                    <p class="text-slate-400 mb-4">
+                        Introduce variables psicológicas humanas. Los clientes tienen un "umbral de paciencia" aleatorio.
+                    </p>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <li class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <strong class="text-white block mb-1">Reneging (Abandono)</strong>
+                            <span class="text-sm">El cliente se retira de la cola después de esperar un tiempo $t > Paciencia$.</span>
+                        </li>
+                        <li class="bg-slate-800 p-4 rounded-lg border border-slate-700">
+                            <strong class="text-white block mb-1">Balking (Rechazo)</strong>
+                            <span class="text-sm">El cliente ve la cola muy larga al llegar y decide no entrar al sistema.</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <section id="model-exp" class="relative group">
+                    <div class="absolute -inset-4 bg-purple-500/5 rounded-xl -z-10 group-hover:bg-purple-500/10 transition-colors"></div>
+                    <div class="flex items-center justify-between mb-4 border-b border-purple-500/30 pb-2">
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                            3. Modelo Experimental
+                            <span class="text-xs bg-purple-600 text-white px-2 py-1 rounded uppercase tracking-wider font-bold">En Desarrollo</span>
+                        </h2>
+                        <span class="material-icons-round text-purple-500">science</span>
+                    </div>
+                    
+                    <p class="text-slate-300 mb-4">
+                        Este módulo implementará <strong>Redes de Jackson (Jackson Networks)</strong>, permitiendo conectar múltiples sistemas de colas en serie o paralelo.
+                    </p>
+                    
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-20 text-purple-500 font-mono text-xs">PREVIEW v3.0</div>
+                        <h4 class="font-bold text-purple-400 mb-2">Características Planificadas:</h4>
+                        <ul class="space-y-2 text-sm text-slate-400">
+                            <li class="flex items-center gap-2"><span class="text-purple-500">▹</span> Enrutamiento probabilístico entre nodos (Matriz de Ruteo).</li>
+                            <li class="flex items-center gap-2"><span class="text-purple-500">▹</span> Colas con capacidad finita (M/M/s/K).</li>
+                            <li class="flex items-center gap-2"><span class="text-purple-500">▹</span> Tipos de clientes múltiples con rutas distintas.</li>
+                        </ul>
+                        <div class="mt-6 p-3 bg-purple-900/20 border border-purple-500/30 rounded text-xs text-purple-300 text-center">
+                            Fecha estimada de lanzamiento: Q4 2026
+                        </div>
+                    </div>
+                </section>
+
+                <section id="api-ref">
+                    <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Referencia API (Local)</h2>
+                    <p class="text-slate-400 mb-4">El motor expone sus datos a través del objeto global <code>STATE.engine</code> en la consola del navegador.</p>
+                    <pre class="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm text-emerald-400 font-mono">
+// Obtener estadísticas actuales en tiempo real
+const currentStats = STATE.engine.getStats();
+console.log(currentStats);
+/* Output:
+{
+  "atendidos": 45,
+  "esperaTotal": 120.5,
+  "utilization": 0.85,
+  "overtime": 0
+}
+*/</pre>
+                </section>
+
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,121 +1,188 @@
 export class QueueEngine {
     constructor(params) {
-        this.lambda = params.lambda;
-        this.mu = params.mu;
-        this.s = params.servers; 
-        this.m = params.queues;  
-        this.probPref = params.lambda > 0 ? params.pref / params.lambda : 0;
+        // ... (código existente del constructor igual hasta stats) ...
+        this.mode = params.mode || 'standard';
+        // Configuración Base
+        this.lambda = params.lambda; 
+        this.mu = params.mu;         
+        this.s = params.servers;     
+        this.m = params.queues;      
         this.limitHours = params.hours;
-        
-        // Recibimos el parámetro (default 5 si no viene)
-        this.vipStep = params.vipStep || 5; 
 
-        this.reloj = 0.0;        
-        this.tiempoExtra = 0.0;  
-        this.abierto = true;     
-        this.trabajando = true;  
+        // Segmentación VIP
+        this.targetVipServers = Math.min(params.vipCount, this.s);
+        this.vipProb = Math.max(0, Math.min(1, params.vipPercent / 100));
+
+        // Finanzas
+        this.ticketPrice = params.ticket;
+        this.costPerClient = params.costInsumo;
+
+        // Psicología
+        this.patienceLimit = (params.patience || 15) / 60; 
+        this.tolerance = params.tolerance || 10;
         
-        this.totalAtendidos = 0;
-        this.acumEspera = 0;     
-        this.acumOcupacion = 0;  
+        // Estado Interno
+        this.reloj = 0.0;
+        this.tiempoExtra = 0.0;
+        this.abierto = true;     
+        this.trabajando = true;
+
+        // --- STATS EXTENDIDOS ---
+        this.stats = { 
+            atendidos: 0, 
+            abandonos: 0, 
+            rechazos: 0, 
+            esperaTotal: 0, 
+            ocupacionTotal: 0,
+            maxQueueLength: 0 // Nuevo campo para reporte
+        };
         
         this.qPref = []; 
-        this.qGen = Array.from({length: this.m}, () => []);
+        this.qGen = Array.from({length: this.m}, () => []); 
         
         this.servidores = [];
-        
-        // --- LÓGICA DE DENSIDAD VIP ---
-        // Calculamos cuántos VIPs tocan según el "step" elegido.
-        // Ejemplo: Si s=10 y step=3 -> Math.floor(10/3) = 3 Cajas VIP.
-        let sPrefCount = 0;
-        
-        if (this.s > 1) {
-            sPrefCount = Math.floor(this.s / this.vipStep);
-        }
-        // Si s=1, sPrefCount se queda en 0 (Regla de oro: 1 servidor siempre es General)
-
-        const firstPrefIndex = this.s - sPrefCount; 
-        
-        for(let i=0; i<this.s; i++) {
-            // Los VIPs se colocan al final del arreglo para mantener el orden visual
-            const isPref = i >= firstPrefIndex; 
-            
-            this.servidores.push({
-                id: i, 
-                // Asignamos tipo
-                type: (sPrefCount > 0 && isPref) ? 'PREF' : 'GEN', 
-                busy: false, timer: 0, clientType: null, totalBusyTime: 0
-            });
-        }
-
-        this.hasVipService = this.servidores.some(s => s.type === 'PREF');
+        this.initServers();
     }
 
+    // ... initServers, setLambda igual ...
+    initServers() {
+        let sPrefCount = this.targetVipServers;
+        for(let i=0; i<this.s; i++) {
+            const isPref = i < sPrefCount; 
+            this.servidores.push({
+                id: i, 
+                type: isPref ? 'PREF' : 'GEN', 
+                busy: false, 
+                timer: 0, 
+                clientType: null, 
+                totalBusyTime: 0
+            });
+        }
+        this.hasVipService = sPrefCount > 0;
+    }
+
+    setLambda(newLambda) { this.lambda = newLambda; }
+
     step(dt) {
+        // ... (lógica de tiempo igual) ...
         let tiempoParaCierre = Math.max(0, this.limitHours - this.reloj);
         let dtNormal = dt <= tiempoParaCierre ? dt : tiempoParaCierre;
         let dtExtra = dt > tiempoParaCierre ? dt - tiempoParaCierre : 0;
 
-        if (dtNormal > 0) {
+        if (this.abierto && dtNormal > 0) {
             this.reloj += dtNormal;
             if (Math.random() < this.lambda * dtNormal) {
-                // Solo generamos VIPs si realmente hay servicio VIP
-                const esVIP = this.hasVipService && (Math.random() < this.probPref);
-                
-                const cliente = { t: this.reloj, type: esVIP ? 'PREF' : 'GEN' }; 
-                
-                if (esVIP) this.qPref.push(cliente);
-                else {
-                    let idx = 0, min = Infinity;
-                    for(let i=0; i<this.m; i++){ if(this.qGen[i].length < min){ min = this.qGen[i].length; idx = i; }}
-                    this.qGen[idx].push(cliente);
+                this.handleArrival();
+            }
+        } else if (this.abierto && dtNormal <= 0) {
+             this.abierto = false; 
+        }
+
+        if (!this.abierto) {
+            if (this.hayGente()) {
+                this.tiempoExtra += (dtNormal === 0 ? dt : dtExtra); 
+            } else { 
+                this.trabajando = false; 
+                return false; 
+            }
+        }
+
+        if (this.mode === 'psych') this.checkReneging(dt);
+
+        this.balanceQueues();   
+        this.processServers(dt);
+        
+        // --- CALCULO DE COLA MÁXIMA ---
+        const currentTotalQ = this.getTotalQueueSize();
+        if(currentTotalQ > this.stats.maxQueueLength) {
+            this.stats.maxQueueLength = currentTotalQ;
+        }
+
+        let busyCount = this.servidores.filter(s => s.busy).length;
+        this.stats.ocupacionTotal += (busyCount / this.s) * dt;
+        
+        return true;
+    }
+
+    // ... (resto de métodos handleArrival, checkReneging, processServers, balanceQueues, pullGen, hayGente igual) ...
+    handleArrival() {
+        const esVIP = this.hasVipService && (Math.random() < this.vipProb);
+        
+        if (this.mode === 'psych') {
+            const totalEnCola = this.getTotalQueueSize();
+            if (totalEnCola > (this.tolerance * this.m)) {
+                if (Math.random() < 0.7) {
+                    this.stats.rechazos++;
+                    return; 
                 }
             }
         }
 
-        if (this.reloj >= this.limitHours) this.abierto = false;
-
-        if (!this.abierto) {
-            if (this.hayGente()) this.tiempoExtra += dtExtra; 
-            else { this.trabajando = false; return false; }
-        }
-
-        this.balanceQueues();
+        const cliente = { 
+            t: this.reloj, 
+            type: esVIP ? 'PREF' : 'GEN',
+            patience: this.patienceLimit * (0.8 + Math.random() * 0.4) 
+        }; 
         
-        let busyCount = 0;
+        if (esVIP) this.qPref.push(cliente);
+        else {
+            let idx = 0, min = Infinity;
+            for(let i=0; i<this.m; i++){ 
+                if(this.qGen[i].length < min){ min = this.qGen[i].length; idx = i; }
+            }
+            this.qGen[idx].push(cliente);
+        }
+    }
+
+    checkReneging(dt) {
+        const check = (arr) => {
+            for (let i = arr.length - 1; i >= 0; i--) {
+                if ((this.reloj - arr[i].t) > arr[i].patience) {
+                    arr.splice(i, 1);
+                    this.stats.abandonos++;
+                }
+            }
+        };
+        check(this.qPref);
+        this.qGen.forEach(q => check(q));
+    }
+
+    processServers(dt) {
         this.servidores.forEach(srv => {
             if (srv.busy) {
-                busyCount++;
                 srv.timer -= dt;
                 srv.totalBusyTime += dt;
-                if (srv.timer <= 0) { srv.busy = false; srv.clientType = null; this.totalAtendidos++; }
+                if (srv.timer <= 0) { 
+                    srv.busy = false; 
+                    srv.clientType = null; 
+                    this.stats.atendidos++; 
+                }
             }
             
             if (!srv.busy) {
                 let clientObj = null;
                 
                 if (srv.type === 'PREF') {
-                    clientObj = (this.qPref.length > 0) ? this.qPref.shift() : this.pullGen();
-                } else {
-                    if (!this.hasVipService && this.qPref.length > 0) {
-                         clientObj = this.qPref.shift();
+                    if (this.qPref.length > 0) {
+                        clientObj = this.qPref.shift();
                     } else {
-                         clientObj = this.pullGen();
+                        clientObj = this.pullGen();
+                    }
+                } else {
+                    clientObj = this.pullGen();
+                    if (!clientObj && this.qPref.length > 0) {
+                        clientObj = this.qPref.shift(); 
                     }
                 }
 
                 if (clientObj) {
-                    const horaActual = this.reloj + this.tiempoExtra;
-                    this.acumEspera += (horaActual - clientObj.t);
+                    this.stats.esperaTotal += (this.reloj - clientObj.t);
                     srv.busy = true;
+                    srv.clientType = clientObj.type; // Guardamos el tipo de CLIENTE
                     srv.timer = -Math.log(1 - Math.random()) / this.mu;
-                    srv.clientType = clientObj.type; 
                 }
             }
         });
-        
-        this.acumOcupacion += (busyCount / this.s) * dt;
-        return true;
     }
 
     balanceQueues() {
@@ -126,28 +193,35 @@ export class QueueEngine {
             if (l < min) { min = l; minI = i; }
             if (l > max) { max = l; maxI = i; }
         }
-        if (max - min >= 2) this.qGen[minI].push(this.qGen[maxI].pop());
+        if (max - min >= 2) {
+            const mover = this.qGen[maxI].pop();
+            this.qGen[minI].push(mover);
+        }
     }
 
     pullGen() {
         let maxI = -1, max = 0;
-        for(let i=0; i<this.m; i++) { if (this.qGen[i].length > max) { max = this.qGen[i].length; maxI = i; } }
+        for(let i=0; i<this.m; i++) { 
+            if (this.qGen[i].length > max) { max = this.qGen[i].length; maxI = i; } 
+        }
         if (maxI !== -1) return this.qGen[maxI].shift();
         return null;
     }
 
-    hayGente() {
-        return this.qPref.length > 0 || this.qGen.some(q => q.length > 0) || this.servidores.some(s => s.busy);
-    }
-    
+    hayGente() { return this.qPref.length > 0 || this.qGen.some(q => q.length > 0) || this.servidores.some(s => s.busy); }
+    getTotalQueueSize() { return this.qPref.length + this.qGen.reduce((a, b) => a + b.length, 0); }
+
     getStats() {
         const tiempoTotal = this.reloj + this.tiempoExtra;
         return {
-            pref: this.qPref.length,
-            gen: this.qGen.reduce((a, b) => a + b.length, 0),
+            prefQ: this.qPref.length,
+            genQ: this.qGen.reduce((a, b) => a + b.length, 0),
+            ...this.stats, // Incluye maxQueueLength
+            utilization: tiempoTotal > 0 ? (this.stats.ocupacionTotal / tiempoTotal) : 0, 
+            avgWait: this.stats.atendidos > 0 ? (this.stats.esperaTotal / this.stats.atendidos) * 60 : 0, 
             overtime: this.tiempoExtra,
-            utilization: tiempoTotal > 0 ? (this.acumOcupacion / tiempoTotal) : 0, 
-            avgWait: this.totalAtendidos > 0 ? (this.acumEspera / this.totalAtendidos) * 60 : 0 
+            ticket: this.ticketPrice,
+            cost: this.costPerClient
         };
     }
 }
