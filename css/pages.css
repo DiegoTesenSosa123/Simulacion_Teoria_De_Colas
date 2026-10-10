@@ -1,0 +1,9 @@
+/* Estilos compartidos de pages/*.html */
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; }
+[id] { scroll-margin-top: 6rem; }
+::selection { background: rgba(59,130,246,.3); }
+:focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; }
+.code-block { background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; line-height: 1.6; }
+.sidebar-scroll { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition-duration: .01ms !important; animation-duration: .01ms !important; } }

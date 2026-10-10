@@ -1,22 +1,175 @@
-/* Glassmorphism */
-.glass-panel { 
-    backdrop-filter: blur(12px); 
+/* ==========================================================================
+   MMM.config · Sistema de diseño
+   Una sola fuente de verdad para color, radios, tipografía y componentes.
+   Landing, simuladores, reporte y escena 3D (js/renderer.js) leen estos valores.
+   ========================================================================== */
+
+:root {
+    /* Superficies */
+    --bg: #eef1f6;
+    --surface: #ffffff;
+    --surface-2: #f6f8fb;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    /* Texto */
+    --text: #0f172a;
+    --text-muted: #64748b;
+
+    /* Marca y roles semánticos (cada color significa una sola cosa) */
+    --accent: #2563eb;      /* marca / acción principal */
+    --gen: #2563eb;         /* clientes y cajas generales */
+    --vip: #7c3aed;         /* clientes y cajas preferenciales */
+    --ok: #059669;          /* resultado favorable */
+    --warn: #b45309;        /* atención / hora pico / sobrecosto */
+    --danger: #dc2626;      /* pérdida / inestable */
+
+    /* Forma */
+    --radius-control: 8px;  /* botones, campos, chips */
+    --radius-panel: 12px;   /* paneles, tarjetas, modales */
+}
+
+.dark {
+    --bg: #0b0f17;
+    --surface: #0e1117;
+    --surface-2: #131925;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
+
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+
+    --accent: #3b82f6;
+    --gen: #60a5fa;
+    --vip: #a78bfa;
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --danger: #f87171;
+}
+
+/* Colores semánticos reutilizables (texto) */
+.ui-ok { color: var(--ok); }
+.ui-warn { color: var(--warn); }
+.ui-danger { color: var(--danger); }
+.ui-vip { color: var(--vip); }
+.ui-gen { color: var(--gen); }
+.ui-muted { color: var(--text-muted); }
+
+/* ---------- Tipografía ---------- */
+/* Overline: etiquetas de sección y de dato */
+.ui-overline {
+    font-size: 11px; line-height: 1.2; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-muted);
+}
+/* Etiqueta pequeña de dato (HUD) */
+.ui-stat-label {
+    display: block; font-size: 10px; line-height: 1.2; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
+}
+/* Valor numérico: mono con cifras tabulares para que no "bailen" */
+.ui-num { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text); }
+/* Títulos: serif, igual que en la landing */
+.ui-title { font-family: 'Fraunces', Georgia, serif; font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+
+/* ---------- Superficies ---------- */
+.ui-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-panel); }
+.ui-section { border: 1px solid var(--border); border-radius: var(--radius-panel); padding: 16px; }
+.ui-divider { border-color: var(--border); }
+
+/* ---------- Campos ---------- */
+.ui-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.ui-field {
+    width: 100%; padding: 8px 12px;
+    background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border-strong); border-radius: var(--radius-control);
+    font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums;
+    outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.ui-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+
+/* ---------- Botones ---------- */
+.ui-btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 10px 14px; border-radius: var(--radius-control);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    border: 1px solid transparent; cursor: pointer; user-select: none;
+    transition: background-color .15s, border-color .15s, color .15s;
+}
+.ui-btn:disabled { opacity: .5; cursor: not-allowed; }
+.ui-btn-primary { background: #2563eb; color: #fff; padding: 12px 14px; font-size: 14px; }
+.ui-btn-primary:hover:not(:disabled) { background: #3b82f6; }
+.ui-btn-secondary { background: transparent; color: var(--text-muted); border-color: var(--border-strong); }
+.ui-btn-secondary:hover:not(:disabled) { background: color-mix(in srgb, var(--text) 6%, transparent); color: var(--text); }
+.ui-btn-warn { background: #b45309; color: #fff; }
+.ui-btn-warn:hover:not(:disabled) { background: #d97706; }
+.ui-btn-warn[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px #f59e0b; }
+.ui-btn-danger { background: transparent; color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, transparent); }
+.ui-btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--danger) 12%, transparent); }
+/* Chip: acciones pequeñas (escenarios rápidos) */
+.ui-chip { padding: 8px; font-size: 12px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-strong); border-radius: var(--radius-control); font-weight: 600; cursor: pointer; transition: all .15s; }
+.ui-chip:hover { background: #2563eb; border-color: #2563eb; color: #fff; }
+/* Botón flotante sobre la escena */
+.ui-float {
+    display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border-strong);
+    border-radius: var(--radius-control); font-size: 12px; font-weight: 600;
+    box-shadow: 0 2px 8px rgba(2, 6, 23, .18); cursor: pointer; transition: background-color .15s;
+}
+.ui-float:hover { background: var(--surface-2); }
+
+/* ---------- Glass del HUD ---------- */
+.glass-panel {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    border: 1px solid var(--border);
     transition: background-color 0.3s, border-color 0.3s;
 }
 
-.dark .glass-panel { 
-    background: rgba(15, 23, 42, 0.85); 
-    border-top: 1px solid rgba(255,255,255,0.1); 
-}
+/* ---------- Accesibilidad ---------- */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+input:focus-visible { outline-offset: 0; }
 
-html:not(.dark) .glass-panel {
-    background: rgba(255, 255, 255, 0.6);
-    border-top: 1px solid rgba(0,0,0,0.05);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-}
-
-/* Custom Scrollbar */
+/* ---------- Scrollbar ---------- */
+.custom-scroll { scrollbar-width: thin; scrollbar-color: #475569 transparent; }
 .custom-scroll::-webkit-scrollbar { width: 8px; }
 .custom-scroll::-webkit-scrollbar-track { background: transparent; }
 .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
 .custom-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+/* ---------- Estructura de la app ---------- */
+.ui-app { background: var(--bg); color: var(--text); }
+.ui-sidebar { background: var(--surface); border-right: 1px solid var(--border); }
+.ui-backdrop { background: color-mix(in srgb, #020617 82%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+.ui-badge {
+    display: inline-block; padding: 3px 8px; margin-top: 8px;
+    border: 1px solid var(--border-strong); border-radius: var(--radius-control);
+    font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted);
+}
+
+/* Etiquetas de dato con color de rol (deben ir después de .ui-stat-label) */
+.ui-stat-label.ui-vip { color: var(--vip); }
+.ui-stat-label.ui-gen { color: var(--gen); }
+.ui-stat-label.ui-danger { color: var(--danger); }
+.ui-stat-label.ui-warn { color: var(--warn); }
+
+/* ---------- Tabla del reporte ---------- */
+.ui-table { width: 100%; font-size: 14px; text-align: left; border-collapse: collapse; }
+.ui-table th {
+    padding: 12px 24px; background: var(--surface-2); color: var(--text-muted);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+}
+.ui-table td { padding: 14px 24px; border-top: 1px solid var(--border); color: var(--text-muted); }
+.ui-table td:first-child { color: var(--text); font-weight: 500; }
+.ui-table td.ui-value { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; color: var(--text); font-weight: 600; }
+.ui-table tr.ui-row-warn td { color: var(--warn); }
+.ui-table tr.ui-row-danger td { color: var(--danger); }
+.ui-table tr.ui-row-warn td.ui-value, .ui-table tr.ui-row-danger td.ui-value { color: inherit; }
+
+/* ---------- Estado bloqueado (simulación en curso) ---------- */
+.ui-field:disabled { opacity: .5; cursor: not-allowed; background: transparent; color: var(--text-muted); }
+.ui-chip:disabled { opacity: .5; cursor: not-allowed; }
+.ui-chip:disabled:hover { background: transparent; border-color: var(--border-strong); color: var(--text-muted); }
+input[type="range"]:disabled { opacity: .5; cursor: not-allowed !important; }
+#sidebar[data-locked] .ui-label { opacity: .6; }

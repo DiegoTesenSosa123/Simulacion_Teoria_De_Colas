@@ -1,146 +1,73 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Reference - MMM.config</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="../js/theme-config.js"></script>
-    <style>
-        .code-block { background: #020617; border: 1px solid #1e293b; border-radius: 12px; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; }
-        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
-        .sidebar-scroll::-webkit-scrollbar-thumb { background: #334155; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API - MMM.config</title>
+<meta name="description" content="Referencia del motor de simulación QueueEngine de MMM.config.">
+<meta name="theme-color" content="#0f172a">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none';">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="../js/theme-config.js"></script>
+<link rel="stylesheet" href="../css/pages.css">
 </head>
-<body class="bg-slate-900 text-slate-300 font-sans h-screen flex flex-col">
-
-    <nav class="flex-none sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="../index.html" class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black">M</div>
-                <span class="font-display font-bold text-lg text-white tracking-tight">MMM.config <span class="text-slate-500 font-light ml-2 text-sm uppercase font-mono tracking-widest">API</span></span>
-            </a>
-            <a href="../index.html" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-all flex items-center gap-2 border border-slate-700">
-                <span class="material-icons-round text-sm">logout</span> Salir
-            </a>
-        </div>
-    </nav>
-
-    <div class="flex-1 flex overflow-hidden">
-        <aside class="w-64 flex-none border-r border-slate-800 bg-slate-950 hidden lg:block overflow-y-auto sidebar-scroll p-6">
-            <div class="space-y-8">
-                <div>
-                    <h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Core Objects</h5>
-                    <ul class="space-y-2 text-sm text-slate-400">
-                        <li><a href="#state" class="hover:text-blue-400 transition-colors">Global State</a></li>
-                        <li><a href="#engine" class="hover:text-blue-400 transition-colors">QueueEngine Instance</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Methods</h5>
-                    <ul class="space-y-2 text-sm text-slate-400">
-                        <li><a href="#step" class="hover:text-blue-400 transition-colors">.step(dt)</a></li>
-                        <li><a href="#stats" class="hover:text-blue-400 transition-colors">.getStats()</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Entities</h5>
-                    <ul class="space-y-2 text-sm text-slate-400">
-                        <li><a href="#client" class="hover:text-blue-400 transition-colors">Client Schema</a></li>
-                        <li><a href="#server" class="hover:text-blue-400 transition-colors">Server Schema</a></li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
-
-        <main class="flex-1 overflow-y-auto p-8 lg:p-16 scroll-smooth">
-            <div class="max-w-4xl mx-auto space-y-20">
-                
-                <header>
-                    <h1 class="text-4xl font-bold text-white mb-4 tracking-tight">Referencia de la API Interna</h1>
-                    <p class="text-slate-400 text-lg leading-relaxed">
-                        MMM.config expone una API interna estructurada para el control dinámico de la simulación. Puede interactuar con el motor directamente desde la consola o mediante hooks de integración.
-                    </p>
-                </header>
-
-                <section id="state">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                        <span class="w-1.5 h-6 bg-blue-500 rounded-full"></span> Objeto Global STATE
-                    </h2>
-                    <p class="mb-4">Este objeto mantiene el contexto de ejecución de la aplicación.</p>
-                    <div class="code-block">
-                        <pre class="text-blue-300">
-{
-  engine: <span class="text-slate-500">QueueEngine</span>,  <span class="text-slate-500">// Instancia del motor activo</span>
-  isPaused: <span class="text-emerald-400">Boolean</span>,     <span class="text-slate-500">// Estado de pausa</span>
-  speed: <span class="text-emerald-400">Number</span>,        <span class="text-slate-500">// Delta time multiplier (0.01 = x1)</span>
-  mode: <span class="text-emerald-400">String</span>          <span class="text-slate-500">// 'standard' | 'psych'</span>
-}</pre>
-                    </div>
-                </section>
-
-                <section id="engine">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                        <span class="w-1.5 h-6 bg-purple-500 rounded-full"></span> Métodos del QueueEngine
-                    </h2>
-                    
-                    <div id="step" class="mb-10">
-                        <h4 class="text-emerald-400 font-mono font-bold mb-2">.step(dt)</h4>
-                        <p class="text-sm text-slate-400 mb-4">Avanza la lógica de simulación un paso en el tiempo.</p>
-                        <div class="code-block text-xs">
-                            <span class="text-slate-500">// dt: valor incremental de tiempo basado en FPS y velocidad.</span><br>
-                            STATE.engine.step(0.01);
-                        </div>
-                    </div>
-
-                    <div id="stats">
-                        <h4 class="text-emerald-400 font-mono font-bold mb-2">.getStats()</h4>
-                        <p class="text-sm text-slate-400 mb-4">Retorna el volcado completo de métricas acumuladas hasta el momento.</p>
-                        <div class="code-block text-xs">
-                            <pre class="text-blue-300">
-{
-  atendidos: <span class="text-emerald-400">45</span>,
-  abandonos: <span class="text-emerald-400">3</span>,
-  utilization: <span class="text-emerald-400">0.82</span>,
-  overtime: <span class="text-emerald-400">0.05</span>,  <span class="text-slate-500">// Horas en tiempo extra</span>
-  avgWait: <span class="text-emerald-400">12.4</span>    <span class="text-slate-500">// Minutos</span>
-}</pre>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="client">
-                    <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                        <span class="w-1.5 h-6 bg-orange-500 rounded-full"></span> Esquemas de Datos
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="p-6 bg-slate-800/30 border border-slate-800 rounded-xl">
-                            <h5 class="text-white font-bold mb-3">Client Object</h5>
-                            <ul class="text-xs space-y-2 font-mono">
-                                <li>t: <span class="text-slate-500">Entry time</span></li>
-                                <li>type: <span class="text-slate-500">'PREF' | 'GEN'</span></li>
-                                <li>patience: <span class="text-slate-500">Wait limit</span></li>
-                            </ul>
-                        </div>
-                        <div class="p-6 bg-slate-800/30 border border-slate-800 rounded-xl">
-                            <h5 class="text-white font-bold mb-3">Server Object</h5>
-                            <ul class="text-xs space-y-2 font-mono">
-                                <li>id: <span class="text-slate-500">Integer</span></li>
-                                <li>busy: <span class="text-slate-500">Boolean</span></li>
-                                <li>timer: <span class="text-slate-500">Service countdown</span></li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-
-                <footer class="pt-10 border-t border-slate-800 text-xs text-slate-600 font-mono">
-                    END OF API SPECIFICATION // BUILD_v2.1_FEB2026
-                </footer>
-
-            </div>
-        </main>
+<body class="bg-slate-950 text-slate-300 font-sans min-h-screen flex flex-col">
+<div class="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true"><div class="absolute -top-32 left-1/4 w-[28rem] h-[28rem] bg-blue-600/15 rounded-full blur-[120px]"></div></div>
+<header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
+  <div class="relative w-full px-4 md:px-8 lg:px-12 h-16 flex items-center justify-between">
+    <a href="../index.html" class="flex items-center gap-2.5"><span class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display shadow-lg shadow-blue-500/30">M</span><span class="font-display font-bold text-lg sm:text-xl tracking-tight text-white">MMM.config</span></a>
+    <nav class="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-6 xl:gap-8 text-sm font-medium text-slate-400" aria-label="Principal"><a href="docs.html" class="hover:text-white transition-colors">Documentación</a><a href="api.html" class="text-white">API</a><a href="status.html" class="hover:text-white transition-colors">Estado</a><a href="privacy.html" class="hover:text-white transition-colors">Privacidad</a><a href="terms.html" class="hover:text-white transition-colors">Términos</a></nav>
+    <div class="flex items-center gap-2">
+      <a href="../index.html" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-full border border-white/10 transition"><span class="material-icons-round text-sm">home</span> Inicio</a>
+      <button type="button" data-menu aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú" class="lg:hidden w-10 h-10 rounded-lg border border-white/10 text-white flex items-center justify-center"><span class="material-icons-round">menu</span></button>
     </div>
+  </div>
+  <nav id="mobile-menu" class="hidden lg:hidden border-t border-white/10 bg-slate-950/95 px-5 py-3 text-slate-300" aria-label="Móvil"><a href="docs.html" class="block py-3 border-b border-white/5">Documentación</a><a href="api.html" class="block py-3 border-b border-white/5 text-white font-semibold">API</a><a href="status.html" class="block py-3 border-b border-white/5">Estado</a><a href="privacy.html" class="block py-3 border-b border-white/5">Privacidad</a><a href="terms.html" class="block py-3 border-b border-white/5">Términos</a><a href="../index.html" class="block py-3">Inicio</a></nav>
+</header>
+<div class="max-w-7xl mx-auto w-full px-4 md:px-8 lg:px-12 py-10 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] gap-12 flex-1">
+<aside class="hidden lg:block sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto sidebar-scroll space-y-7"><div><h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Motor</h5><ul class="space-y-2 text-sm text-slate-400"><li><a href="#console" class="hover:text-blue-400 transition-colors">Consola</a></li><li><a href="#constructor" class="hover:text-blue-400 transition-colors">Constructor</a></li><li><a href="#methods" class="hover:text-blue-400 transition-colors">Métodos</a></li><li><a href="#stats" class="hover:text-blue-400 transition-colors">getStats()</a></li><li><a href="#props" class="hover:text-blue-400 transition-colors">Propiedades</a></li></ul></div></aside>
+<details class="lg:hidden mb-8 rounded-xl border border-slate-800 bg-slate-900/60 p-4"><summary class="cursor-pointer font-bold text-white text-sm">En esta página</summary><div class="mt-3"><a href="#console" class="block py-1.5 text-sm text-slate-400">Consola</a><a href="#constructor" class="block py-1.5 text-sm text-slate-400">Constructor</a><a href="#methods" class="block py-1.5 text-sm text-slate-400">Métodos</a><a href="#stats" class="block py-1.5 text-sm text-slate-400">getStats()</a><a href="#props" class="block py-1.5 text-sm text-slate-400">Propiedades</a></div></details>
+<main class="min-w-0 max-w-3xl space-y-16"><header class="mb-10"><span class="text-purple-500 font-mono text-xs font-bold tracking-widest uppercase mb-2 block">Referencia</span><h1 class="font-display text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">API del motor</h1><p class="text-slate-400 text-lg leading-relaxed">El motor es un módulo ES independiente (<code class="text-purple-300">js/engine.js</code>). Las horas se expresan en horas simuladas y las tasas son por hora.</p></header><section><h2 id="console" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>Acceso desde la consola</h2><p class="text-slate-400 leading-relaxed mb-4">Con el simulador abierto, la consola del navegador expone un objeto de solo lectura:</p><pre class="code-block text-sm text-blue-300 overflow-x-auto">MMM.engine        // instancia activa de QueueEngine (o null)
+MMM.stats         // equivale a MMM.engine.getStats()</pre></section>
+<section><h2 id="constructor" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-purple-500 rounded-full"></span>Constructor</h2><p class="text-slate-400 leading-relaxed mb-4">Los valores inválidos (vacíos, negativos, NaN) se corrigen al rango permitido.</p><pre class="code-block text-sm text-blue-300 overflow-x-auto">import { QueueEngine } from &#x27;./js/engine.js&#x27;;
+
+const e = new QueueEngine({
+  mode: &#x27;standard&#x27;,   // &#x27;standard&#x27; | &#x27;psych&#x27;
+  lambda: 40,         // llegadas/h        (0–1000)
+  mu: 15,             // atención/h        (0.1–1000)
+  servers: 5,         // servidores        (1–20)
+  queues: 3,          // colas generales   (1–10)
+  hours: 8,           // jornada           (1–24)
+  vipCount: 1,        // cajas VIP         (0–servers)
+  vipPercent: 30,     // % clientes VIP    (0–100)
+  ticket: 25,         // ingreso/cliente
+  costInsumo: 2.5,    // costo/cliente
+  patience: 15,       // min (psych)       (1–240)
+  tolerance: 10       // clientes/cola (psych) (1–100)
+});
+
+while (e.advance(1)) {}   // corre la jornada completa
+console.log(e.getStats());</pre></section>
+<section><h2 id="methods" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>Métodos</h2><div class="overflow-x-auto rounded-xl border border-slate-800 mb-4"><table class="w-full text-sm text-left"><thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider"><tr><th class="px-4 py-3 font-semibold">Método</th><th class="px-4 py-3 font-semibold">Descripción</th></tr></thead><tbody><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">advance(hours)</td><td class="px-4 py-3 text-slate-400">Avanza <em>hours</em> horas en sub-pasos de 0.004 h. Devuelve <code>false</code> cuando la jornada y la cola terminaron.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">step(dt)</td><td class="px-4 py-3 text-slate-400">Un solo paso de <em>dt</em> horas (uso avanzado; prefiere advance).</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">updateLive(p)</td><td class="px-4 py-3 text-slate-400">Aplica en caliente μ, vipPercent, ticket, costInsumo, patience, tolerance y hours.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">setLambda(v)</td><td class="px-4 py-3 text-slate-400">Cambia λ (por ejemplo, para hora pico).</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">getStats()</td><td class="px-4 py-3 text-slate-400">Devuelve el resumen de métricas (ver abajo).</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">getTotalQueueSize()</td><td class="px-4 py-3 text-slate-400">Personas en espera ahora.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">hayGente()</td><td class="px-4 py-3 text-slate-400"><code>true</code> si hay alguien en cola o en servicio.</td></tr></tbody></table></div></section>
+<section><h2 id="stats" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>getStats()</h2><pre class="code-block text-sm text-blue-300 overflow-x-auto">{
+  prefQ: 0, genQ: 3,          // en cola ahora (VIP / general)
+  atendidos: 324, abandonos: 0, rechazos: 0,
+  esperaTotal: 1.2,           // horas acumuladas
+  maxQueueLength: 4,
+  utilization: 0.51,          // 0–1
+  avgWait: 0.2,               // minutos
+  overtime: 0.10,             // horas extra
+  ticket: 25, cost: 2.5
+}</pre></section>
+<section><h2 id="props" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-orange-500 rounded-full"></span>Propiedades y esquemas</h2><div class="overflow-x-auto rounded-xl border border-slate-800 mb-4"><table class="w-full text-sm text-left"><thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider"><tr><th class="px-4 py-3 font-semibold">Objeto</th><th class="px-4 py-3 font-semibold">Campos</th></tr></thead><tbody><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">engine</td><td class="px-4 py-3 text-slate-400">now, reloj, tiempoExtra, abierto, trabajando, servidores, qPref, qGen, history</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Cliente</td><td class="px-4 py-3 text-slate-400">t (llegada, h), type ('PREF'|'GEN'), patience (h)</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Servidor</td><td class="px-4 py-3 text-slate-400">id, type, busy, timer (h), clientType, totalBusyTime</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">history[i]</td><td class="px-4 py-3 text-slate-400">t (h), q (en cola), busy (servidores ocupados); una muestra cada 0.05 h</td></tr></tbody></table></div><div class="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex gap-3 items-start mb-4"><span class="material-icons-round text-amber-400 mt-0.5">warning</span><div class="text-sm text-slate-300 leading-relaxed">Los módulos ES no se cargan al abrir el archivo con doble clic (<code>file://</code>): sirve la carpeta con un servidor local, por ejemplo <code>python3 -m http.server</code>.</div></div></section></main></div><footer class="border-t border-slate-800 bg-slate-950/60 pt-10 pb-8 mt-8"><div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="col-span-2"><div class="flex items-center gap-2 mb-3"><span class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs">M</span><span class="font-bold text-white">MMM.config</span></div><p class="text-slate-500 text-sm max-w-xs">Suite de simulación para análisis de colas y optimización de recursos.</p></div>
+<div><h4 class="text-white font-bold mb-3 font-display">Producto</h4><ul class="space-y-2 text-sm text-slate-400"><li><a href="docs.html" class="hover:text-blue-400">Documentación</a></li><li><a href="api.html" class="hover:text-blue-400">API</a></li><li><a href="status.html" class="hover:text-blue-400">Estado</a></li></ul></div>
+<div><h4 class="text-white font-bold mb-3 font-display">Legal</h4><ul class="space-y-2 text-sm text-slate-400"><li><a href="privacy.html" class="hover:text-blue-400">Privacidad</a></li><li><a href="terms.html" class="hover:text-blue-400">Términos</a></li></ul></div>
+</div><div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 mt-8 pt-6 border-t border-slate-900 text-center text-xs text-slate-600 font-mono uppercase tracking-widest">&copy; 2026 MMM.config · v2.1 · Lambayeque, Perú</div></footer>
+<script src="../js/pages.js"></script>
 </body>
 </html>

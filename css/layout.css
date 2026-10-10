@@ -1,41 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+/* Las fuentes se cargan desde index.html (se eliminó el @import duplicado que bloqueaba el render) */
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; overflow: hidden; }
+main { display: flex; flex-direction: column; }
+#canvas-container { flex: 1; position: relative; min-height: 0; }
+#chart-container-wrapper { height: 200px; flex-shrink: 0; }
+canvas { display: block; outline: none; }
 
-body { 
-    font-family: 'Inter', sans-serif; 
-    overflow: hidden; 
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-main { 
-    display: flex; 
-    flex-direction: column; 
-}
-
-#canvas-container { 
-    flex: 1; 
-    position: relative; 
-    min-height: 0; 
-}
-
-#chart-container-wrapper { 
-    height: 200px; 
-    flex-shrink: 0; 
-} 
-
-canvas { 
-    display: block; 
-    outline: none; 
-}
-
-html { 
-    scroll-behavior: smooth; 
-}
-
-/* Utilidad para ocultar scrollbars pero permitir desplazamiento */
-.no-scrollbar::-webkit-scrollbar { 
-    display: none; 
-}
-
-.no-scrollbar { 
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

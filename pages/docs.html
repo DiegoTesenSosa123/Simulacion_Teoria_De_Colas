@@ -1,164 +1,53 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentación - MMM.config</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@700;900&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <script src="../js/theme-config.js"></script>
-    <style>
-        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
-        .sidebar-scroll::-webkit-scrollbar-thumb { background: #334155; }
-        html { scroll-behavior: smooth; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentación - MMM.config</title>
+<meta name="description" content="Manual del usuario de MMM.config: parámetros, modelos, métricas y ROI.">
+<meta name="theme-color" content="#0f172a">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none';">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="../js/theme-config.js"></script>
+<link rel="stylesheet" href="../css/pages.css">
 </head>
-<body class="bg-slate-900 text-slate-300 font-sans h-screen flex flex-col">
-
-    <nav class="flex-none sticky top-0 z-50 w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="../index.html" class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display">M</div>
-                <span class="font-display font-bold text-lg text-white tracking-tight">MMM.config <span class="text-slate-500 font-light ml-2">Docs</span></span>
-            </a>
-            <a href="../index.html" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-full transition-all flex items-center gap-2 border border-slate-700">
-                <span class="material-icons-round text-sm">logout</span> Salir
-            </a>
-        </div>
-    </nav>
-
-    <div class="flex-1 flex overflow-hidden">
-        <aside class="w-64 flex-none border-r border-slate-800 bg-slate-900/50 hidden md:block overflow-y-auto sidebar-scroll">
-            <div class="p-6 space-y-8">
-                <div>
-                    <h5 class="font-bold text-white text-sm mb-4">General</h5>
-                    <ul class="space-y-2 text-sm text-slate-400">
-                        <li><a href="#intro" class="hover:text-blue-400 transition-colors">Introducción</a></li>
-                        <li><a href="#config" class="hover:text-blue-400 transition-colors">Configuración</a></li>
-                        <li><a href="#metrics" class="hover:text-blue-400 transition-colors">Métricas</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-bold text-white text-sm mb-4">Modelos</h5>
-                    <ul class="space-y-2 text-sm text-slate-400">
-                        <li><a href="#model-eng" class="hover:text-white transition-colors">Ingeniería (M/M/s)</a></li>
-                        <li><a href="#model-psy" class="hover:text-white transition-colors">Conductual</a></li>
-                        <li><a href="#model-exp" class="text-purple-400 font-bold">Experimental <span class="text-[10px] bg-purple-500/20 px-1 rounded ml-1">BETA</span></a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h5 class="font-bold text-white text-sm mb-4">API</h5>
-                    <ul class="space-y-2 text-sm text-slate-400">
-                        <li><a href="#api-ref" class="hover:text-white transition-colors">Referencia JSON</a></li>
-                    </ul>
-                </div>
-            </div>
-        </aside>
-
-        <main class="flex-1 overflow-y-auto p-8 md:p-16 scroll-smooth">
-            <div class="max-w-3xl mx-auto space-y-16">
-                
-                <section id="intro">
-                    <h1 class="font-display text-4xl font-black text-white mb-6">Manual del Usuario v2.1</h1>
-                    <p class="text-lg text-slate-400 mb-6 leading-relaxed">
-                        MMM.config es una suite de simulación estocástica diseñada para optimizar sistemas de colas. Utiliza WebGL para renderizado en tiempo real y algoritmos basados en eventos discretos para calcular la eficiencia operativa.
-                    </p>
-                    <div class="bg-slate-800/50 border border-slate-700 rounded-xl p-4 flex gap-3 items-start">
-                        <span class="material-icons-round text-blue-500 mt-1">info</span>
-                        <div class="text-sm text-slate-300">
-                            <strong>Requisito:</strong> Para simulaciones con más de 100 entidades simultáneas, se recomienda un navegador basado en Chromium (Chrome, Edge, Brave) con aceleración de hardware activada.
-                        </div>
-                    </div>
-                </section>
-
-                <section id="config">
-                    <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Configuración Básica</h2>
-                    <p class="text-slate-400 mb-4">Antes de iniciar, debes definir los parámetros de entrada en el panel lateral:</p>
-                    <ul class="list-disc pl-5 space-y-2 text-slate-400 mb-6">
-                        <li><strong>Lambda (λ):</strong> Tasa media de llegadas (clientes por hora).</li>
-                        <li><strong>Mu (μ):</strong> Tasa media de servicio por servidor (clientes por hora).</li>
-                        <li><strong>Servidores (s):</strong> Cantidad de nodos de atención activos.</li>
-                    </ul>
-                    <div class="bg-slate-950 rounded-lg border border-slate-800 p-4 font-mono text-sm text-blue-300">
-                        // Ejemplo de configuración estable<br>
-                        λ = 40;  μ = 15;  s = 3;<br>
-                        <span class="text-slate-500">// Utilización ρ = 40 / (3*15) = 0.88 (88%)</span>
-                    </div>
-                </section>
-
-                <section id="model-eng">
-                    <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">1. Modelo de Ingeniería</h2>
-                    <p class="text-slate-400 mb-4">
-                        Basado en la teoría de colas clásica <strong>M/M/s</strong>. Asume colas infinitas, población infinita y disciplina FIFO (First In, First Out).
-                    </p>
-                    <p class="text-slate-400"><strong>Ideal para:</strong> Dimensionamiento inicial de infraestructura y cálculo de costos base.</p>
-                </section>
-
-                <section id="model-psy">
-                    <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">2. Modelo Conductual</h2>
-                    <p class="text-slate-400 mb-4">
-                        Introduce variables psicológicas humanas. Los clientes tienen un "umbral de paciencia" aleatorio.
-                    </p>
-                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <li class="bg-slate-800 p-4 rounded-lg border border-slate-700">
-                            <strong class="text-white block mb-1">Reneging (Abandono)</strong>
-                            <span class="text-sm">El cliente se retira de la cola después de esperar un tiempo $t > Paciencia$.</span>
-                        </li>
-                        <li class="bg-slate-800 p-4 rounded-lg border border-slate-700">
-                            <strong class="text-white block mb-1">Balking (Rechazo)</strong>
-                            <span class="text-sm">El cliente ve la cola muy larga al llegar y decide no entrar al sistema.</span>
-                        </li>
-                    </ul>
-                </section>
-
-                <section id="model-exp" class="relative group">
-                    <div class="absolute -inset-4 bg-purple-500/5 rounded-xl -z-10 group-hover:bg-purple-500/10 transition-colors"></div>
-                    <div class="flex items-center justify-between mb-4 border-b border-purple-500/30 pb-2">
-                        <h2 class="text-2xl font-bold text-white flex items-center gap-3">
-                            3. Modelo Experimental
-                            <span class="text-xs bg-purple-600 text-white px-2 py-1 rounded uppercase tracking-wider font-bold">En Desarrollo</span>
-                        </h2>
-                        <span class="material-icons-round text-purple-500">science</span>
-                    </div>
-                    
-                    <p class="text-slate-300 mb-4">
-                        Este módulo implementará <strong>Redes de Jackson (Jackson Networks)</strong>, permitiendo conectar múltiples sistemas de colas en serie o paralelo.
-                    </p>
-                    
-                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-6 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-4 opacity-20 text-purple-500 font-mono text-xs">PREVIEW v3.0</div>
-                        <h4 class="font-bold text-purple-400 mb-2">Características Planificadas:</h4>
-                        <ul class="space-y-2 text-sm text-slate-400">
-                            <li class="flex items-center gap-2"><span class="text-purple-500">▹</span> Enrutamiento probabilístico entre nodos (Matriz de Ruteo).</li>
-                            <li class="flex items-center gap-2"><span class="text-purple-500">▹</span> Colas con capacidad finita (M/M/s/K).</li>
-                            <li class="flex items-center gap-2"><span class="text-purple-500">▹</span> Tipos de clientes múltiples con rutas distintas.</li>
-                        </ul>
-                        <div class="mt-6 p-3 bg-purple-900/20 border border-purple-500/30 rounded text-xs text-purple-300 text-center">
-                            Fecha estimada de lanzamiento: Q4 2026
-                        </div>
-                    </div>
-                </section>
-
-                <section id="api-ref">
-                    <h2 class="text-2xl font-bold text-white mb-4 border-b border-slate-800 pb-2">Referencia API (Local)</h2>
-                    <p class="text-slate-400 mb-4">El motor expone sus datos a través del objeto global <code>STATE.engine</code> en la consola del navegador.</p>
-                    <pre class="bg-slate-950 p-4 rounded-lg overflow-x-auto text-sm text-emerald-400 font-mono">
-// Obtener estadísticas actuales en tiempo real
-const currentStats = STATE.engine.getStats();
-console.log(currentStats);
-/* Output:
-{
-  "atendidos": 45,
-  "esperaTotal": 120.5,
-  "utilization": 0.85,
-  "overtime": 0
-}
-*/</pre>
-                </section>
-
-            </div>
-        </main>
+<body class="bg-slate-950 text-slate-300 font-sans min-h-screen flex flex-col">
+<div class="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true"><div class="absolute -top-32 left-1/4 w-[28rem] h-[28rem] bg-blue-600/15 rounded-full blur-[120px]"></div></div>
+<header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
+  <div class="relative w-full px-4 md:px-8 lg:px-12 h-16 flex items-center justify-between">
+    <a href="../index.html" class="flex items-center gap-2.5"><span class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display shadow-lg shadow-blue-500/30">M</span><span class="font-display font-bold text-lg sm:text-xl tracking-tight text-white">MMM.config</span></a>
+    <nav class="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-6 xl:gap-8 text-sm font-medium text-slate-400" aria-label="Principal"><a href="docs.html" class="text-white">Documentación</a><a href="api.html" class="hover:text-white transition-colors">API</a><a href="status.html" class="hover:text-white transition-colors">Estado</a><a href="privacy.html" class="hover:text-white transition-colors">Privacidad</a><a href="terms.html" class="hover:text-white transition-colors">Términos</a></nav>
+    <div class="flex items-center gap-2">
+      <a href="../index.html" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-full border border-white/10 transition"><span class="material-icons-round text-sm">home</span> Inicio</a>
+      <button type="button" data-menu aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú" class="lg:hidden w-10 h-10 rounded-lg border border-white/10 text-white flex items-center justify-center"><span class="material-icons-round">menu</span></button>
     </div>
+  </div>
+  <nav id="mobile-menu" class="hidden lg:hidden border-t border-white/10 bg-slate-950/95 px-5 py-3 text-slate-300" aria-label="Móvil"><a href="docs.html" class="block py-3 border-b border-white/5 text-white font-semibold">Documentación</a><a href="api.html" class="block py-3 border-b border-white/5">API</a><a href="status.html" class="block py-3 border-b border-white/5">Estado</a><a href="privacy.html" class="block py-3 border-b border-white/5">Privacidad</a><a href="terms.html" class="block py-3 border-b border-white/5">Términos</a><a href="../index.html" class="block py-3">Inicio</a></nav>
+</header>
+<div class="max-w-7xl mx-auto w-full px-4 md:px-8 lg:px-12 py-10 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] gap-12 flex-1">
+<aside class="hidden lg:block sticky top-24 self-start max-h-[calc(100vh-7rem)] overflow-y-auto sidebar-scroll space-y-7"><div><h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">General</h5><ul class="space-y-2 text-sm text-slate-400"><li><a href="#intro" class="hover:text-blue-400 transition-colors">Introducción</a></li><li><a href="#start" class="hover:text-blue-400 transition-colors">Primeros pasos</a></li><li><a href="#config" class="hover:text-blue-400 transition-colors">Parámetros</a></li><li><a href="#live" class="hover:text-blue-400 transition-colors">Cambios en vivo</a></li></ul></div><div><h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Modelos</h5><ul class="space-y-2 text-sm text-slate-400"><li><a href="#models" class="hover:text-blue-400 transition-colors">Ingeniería y Conductual</a></li><li><a href="#vip" class="hover:text-blue-400 transition-colors">Cajas VIP</a></li></ul></div><div><h5 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Resultados</h5><ul class="space-y-2 text-sm text-slate-400"><li><a href="#metrics" class="hover:text-blue-400 transition-colors">Métricas y ROI</a></li><li><a href="#tips" class="hover:text-blue-400 transition-colors">Buenas prácticas</a></li><li><a href="#glossary" class="hover:text-blue-400 transition-colors">Glosario</a></li></ul></div></aside>
+<details class="lg:hidden mb-8 rounded-xl border border-slate-800 bg-slate-900/60 p-4"><summary class="cursor-pointer font-bold text-white text-sm">En esta página</summary><div class="mt-3"><a href="#intro" class="block py-1.5 text-sm text-slate-400">Introducción</a><a href="#start" class="block py-1.5 text-sm text-slate-400">Primeros pasos</a><a href="#config" class="block py-1.5 text-sm text-slate-400">Parámetros</a><a href="#live" class="block py-1.5 text-sm text-slate-400">Cambios en vivo</a><a href="#models" class="block py-1.5 text-sm text-slate-400">Ingeniería y Conductual</a><a href="#vip" class="block py-1.5 text-sm text-slate-400">Cajas VIP</a><a href="#metrics" class="block py-1.5 text-sm text-slate-400">Métricas y ROI</a><a href="#tips" class="block py-1.5 text-sm text-slate-400">Buenas prácticas</a><a href="#glossary" class="block py-1.5 text-sm text-slate-400">Glosario</a></div></details>
+<main class="min-w-0 max-w-3xl space-y-16"><header class="mb-10"><span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase mb-2 block">Documentación</span><h1 class="font-display text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">Manual del usuario v2.1</h1><p class="text-slate-400 text-lg leading-relaxed">Todo lo necesario para configurar, ejecutar e interpretar una simulación en MMM.config.</p></header><section><h2 id="intro" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>Introducción</h2><p class="text-slate-400 leading-relaxed mb-4">MMM.config es un simulador de colas <strong class="text-white">M/M/s</strong> con vista 3D. El tiempo avanza en pasos fijos de 0.004 h (unos 14 s simulados); las llegadas siguen un proceso de Poisson y los tiempos de servicio una distribución exponencial. Todo se ejecuta en tu navegador.</p><div class="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 flex gap-3 items-start mb-4"><span class="material-icons-round text-blue-400 mt-0.5">info</span><div class="text-sm text-slate-300 leading-relaxed"><strong>Requisito:</strong> un navegador moderno con WebGL. Para escenas grandes (muchos servidores y colas largas) se recomienda uno basado en Chromium con aceleración de hardware. Puedes comprobarlo en <a href="status.html" class="text-blue-400 hover:underline">Estado</a>.</div></div></section>
+<section><h2 id="start" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>Primeros pasos</h2><ol class="list-decimal pl-5 space-y-2 text-slate-400 mb-4"><li>Elige un modelo en el <em>Launchpad</em> de la página de inicio.</li><li>Usa un escenario rápido (<strong class="text-slate-200">Banco</strong>, <strong class="text-slate-200">Clínica</strong>, <strong class="text-slate-200">Retail</strong>) o ajusta los parámetros: la escena 3D muestra cajas y colas al instante.</li><li>Presiona <strong class="text-slate-200">INICIAR</strong>. Al terminar la jornada y vaciarse la cola, se abre el reporte.</li></ol><div class="overflow-x-auto rounded-xl border border-slate-800 mb-4"><table class="w-full text-sm text-left"><thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider"><tr><th class="px-4 py-3 font-semibold">Control</th><th class="px-4 py-3 font-semibold">Qué hace</th></tr></thead><tbody><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">PAUSA / REANUDAR</td><td class="px-4 py-3 text-slate-400">Detiene o continúa la simulación.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Velocidad</td><td class="px-4 py-3 text-slate-400">x1 = 0.6 h/s · x5 = 3 h/s · TURBO = 12 h/s (horas simuladas por segundo real).</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">HORA PICO</td><td class="px-4 py-3 text-slate-400">Triplica λ mientras el sistema siga abierto; vuelve a pulsarlo para desactivar.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">VISTA</td><td class="px-4 py-3 text-slate-400">Alterna cámara frontal, superior e isométrica.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Tema</td><td class="px-4 py-3 text-slate-400">Cambia entre modo claro y oscuro (se recuerda).</td></tr></tbody></table></div></section>
+<section><h2 id="config" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>Parámetros</h2><div class="overflow-x-auto rounded-xl border border-slate-800 mb-4"><table class="w-full text-sm text-left"><thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider"><tr><th class="px-4 py-3 font-semibold">Parámetro</th><th class="px-4 py-3 font-semibold">Rango</th><th class="px-4 py-3 font-semibold">Descripción</th></tr></thead><tbody><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">λ · Llegadas</td><td class="px-4 py-3 text-slate-400">1–1000 /h</td><td class="px-4 py-3 text-slate-400">Clientes que llegan por hora (proceso de Poisson).</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">μ · Atención</td><td class="px-4 py-3 text-slate-400">1–1000 /h</td><td class="px-4 py-3 text-slate-400">Clientes que atiende por hora cada servidor (tiempos exponenciales).</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Servidores (s)</td><td class="px-4 py-3 text-slate-400">1–20</td><td class="px-4 py-3 text-slate-400">Cajas, ventanillas o consultorios en paralelo.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Colas generales</td><td class="px-4 py-3 text-slate-400">1–10</td><td class="px-4 py-3 text-slate-400">Filas para clientes no VIP; el cliente llega a la más corta.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Horas a simular</td><td class="px-4 py-3 text-slate-400">1–24 h</td><td class="px-4 py-3 text-slate-400">Duración de la jornada. Al cerrar se atiende lo que quede en cola (horas extra).</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Cajas VIP</td><td class="px-4 py-3 text-slate-400">0 – s</td><td class="px-4 py-3 text-slate-400">Servidores preferenciales con su propia cola.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">% clientes VIP</td><td class="px-4 py-3 text-slate-400">0–100 %</td><td class="px-4 py-3 text-slate-400">Proporción de llegadas que entran a la cola VIP.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Ticket promedio</td><td class="px-4 py-3 text-slate-400">≥ 0 $</td><td class="px-4 py-3 text-slate-400">Ingreso por cliente atendido.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Costo de insumo</td><td class="px-4 py-3 text-slate-400">≥ 0 $</td><td class="px-4 py-3 text-slate-400">Costo variable por cliente atendido.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Paciencia</td><td class="px-4 py-3 text-slate-400">1–240 min</td><td class="px-4 py-3 text-slate-400">Solo modelo conductual: espera máxima base de un cliente.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Tolerancia</td><td class="px-4 py-3 text-slate-400">1–100</td><td class="px-4 py-3 text-slate-400">Solo modelo conductual: clientes por cola a partir de los cuales hay rechazo.</td></tr></tbody></table></div><p class="text-slate-400 leading-relaxed mb-4">El indicador <strong class="text-white">ρ = λ / (s·μ)</strong> del panel mide la carga del sistema: menos de 0.70 es holgado, entre 0.70 y 0.90 es una carga alta pero estable, entre 0.90 y 1 está al límite y desde 1 es inestable (la cola crece sin control).</p><pre class="code-block text-sm text-blue-300 overflow-x-auto">λ = 40;  μ = 15;  s = 3;
+ρ = 40 / (3 × 15) = 0.89   // carga alta pero estable</pre></section>
+<section><h2 id="live" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>Cambios en vivo</h2><p class="text-slate-400 leading-relaxed mb-4">El simulador mantiene la escena coherente con el panel:</p><ul class="list-disc pl-5 space-y-2 text-slate-400 mb-4"><li><strong class="text-slate-200">Estructura</strong> (servidores, colas, cajas VIP): sin simulación se redibuja como vista previa; con simulación en curso se reinicia 0.5 s después de dejar de escribir.</li><li><strong class="text-slate-200">Resto</strong> (λ, μ, % VIP, ticket, costo, paciencia, tolerancia, horas): se aplica en caliente, sin reiniciar.</li><li>Al salir de un campo, el valor se corrige al rango que realmente usa el motor.</li></ul></section>
+<section><h2 id="models" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-purple-500 rounded-full"></span>Modelos</h2><div class="grid md:grid-cols-2 gap-4 mb-4"><div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><strong class="text-white block mb-2">Ingeniería (M/M/s)</strong><p class="text-sm text-slate-400">Teoría de colas clásica: cola sin límite, sin abandonos ni rechazos, cada cola en orden de llegada. Ideal para dimensionar y calcular costos base.</p></div><div class="bg-slate-900 border border-slate-800 rounded-xl p-5"><strong class="text-white block mb-2">Conductual</strong><p class="text-sm text-slate-400">Añade impaciencia y rechazo. Sirve para estimar cuántas ventas se pierden por filas largas.</p></div></div><ul class="list-disc pl-5 space-y-2 text-slate-400 mb-4"><li><strong class="text-slate-200">Reneging:</strong> cada cliente tiene una paciencia igual a la configurada ±20 %; si espera más, abandona.</li><li><strong class="text-slate-200">Balking:</strong> si el total en cola supera <em>tolerancia × nº de colas</em>, cada llegada es rechazada con probabilidad 0.7.</li><li><strong class="text-slate-200">Colas generales:</strong> el cliente entra a la más corta; si la diferencia entre la más larga y la más corta es 2 o más, se mueve un cliente para equilibrar; las cajas atienden desde la más larga.</li></ul><div class="bg-purple-500/5 border border-purple-500/20 rounded-xl p-4 flex gap-3 items-start mb-4"><span class="material-icons-round text-purple-400 mt-0.5">science</span><div class="text-sm text-slate-300 leading-relaxed"><strong>Modelo Experimental (planificado):</strong> redes de Jackson con ruteo probabilístico, colas finitas (M/M/s/K) y varios tipos de cliente. Fecha estimada: Q4 2026.</div></div></section>
+<section><h2 id="vip" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>Cajas VIP</h2><p class="text-slate-400 leading-relaxed mb-4">Una caja VIP atiende primero la cola VIP y, si está vacía, toma de las colas generales. Una caja general hace lo contrario: prioriza las generales y solo atiende VIP si no hay nadie más. Si no hay cajas VIP, nadie entra a la cola VIP aunque el porcentaje sea mayor que 0.</p></section>
+<section><h2 id="metrics" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>Métricas y ROI</h2><div class="overflow-x-auto rounded-xl border border-slate-800 mb-4"><table class="w-full text-sm text-left"><thead class="bg-slate-900 text-slate-400 text-xs uppercase tracking-wider"><tr><th class="px-4 py-3 font-semibold">Métrica</th><th class="px-4 py-3 font-semibold">Cómo se calcula</th></tr></thead><tbody><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Atendidos</td><td class="px-4 py-3 text-slate-400">Clientes cuyo servicio terminó.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Espera promedio</td><td class="px-4 py-3 text-slate-400">Tiempo medio desde la llegada hasta empezar a ser atendido (minutos).</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Cola máxima</td><td class="px-4 py-3 text-slate-400">Mayor número de personas en espera a la vez.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Ocupación</td><td class="px-4 py-3 text-slate-400">Fracción media de servidores ocupados durante toda la jornada, horas extra incluidas.</td></tr><tr class="border-t border-slate-800"><td class="px-4 py-3 font-mono text-white whitespace-nowrap">Pérdidas</td><td class="px-4 py-3 text-slate-400">(Abandonos + rechazos) × ticket. Solo modelo conductual.</td></tr></tbody></table></div><pre class="code-block text-sm text-blue-300 overflow-x-auto">ingresos = atendidos × ticket
+nómina   = s × (horas + horas_extra) × $15/h
+insumos  = atendidos × costo_insumo
+ROI      = (ingresos − nómina − insumos) / (nómina + insumos)</pre><p class="text-slate-400 leading-relaxed mb-4">La tarifa de $15 por hora y servidor es un valor fijo del simulador.</p></section>
+<section><h2 id="tips" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>Buenas prácticas</h2><ul class="list-disc pl-5 space-y-2 text-slate-400"><li>La simulación es aleatoria: repite el escenario varias veces y compara promedios.</li><li>Procura mantener ρ por debajo de 0.85 para evitar esperas largas.</li><li>Si ves muchas horas extra, revisa ρ y el número de servidores antes que μ.</li><li>Usa HORA PICO para probar qué tan robusta es tu configuración.</li></ul></section>
+<section><h2 id="glossary" class="text-2xl font-display font-bold text-white mb-4 flex items-center gap-2"><span class="w-1.5 h-6 bg-blue-500 rounded-full"></span>Glosario</h2><dl class="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm"><div><dt class="font-mono text-white">λ</dt><dd class="text-slate-400">Tasa de llegadas por hora.</dd></div><div><dt class="font-mono text-white">μ</dt><dd class="text-slate-400">Tasa de atención por servidor y hora.</dd></div><div><dt class="font-mono text-white">s</dt><dd class="text-slate-400">Número de servidores.</dd></div><div><dt class="font-mono text-white">ρ</dt><dd class="text-slate-400">Intensidad de tráfico λ / (s·μ).</dd></div><div><dt class="font-mono text-white">W</dt><dd class="text-slate-400">Tiempo medio de espera.</dd></div><div><dt class="font-mono text-white">L</dt><dd class="text-slate-400">Número medio de clientes en el sistema (L = λ·W).</dd></div><div><dt class="font-mono text-white">Reneging</dt><dd class="text-slate-400">Abandono de la cola por impaciencia.</dd></div><div><dt class="font-mono text-white">Balking</dt><dd class="text-slate-400">Rechazo a entrar por ver la fila muy larga.</dd></div></dl></section></main></div><footer class="border-t border-slate-800 bg-slate-950/60 pt-10 pb-8 mt-8"><div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="col-span-2"><div class="flex items-center gap-2 mb-3"><span class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs">M</span><span class="font-bold text-white">MMM.config</span></div><p class="text-slate-500 text-sm max-w-xs">Suite de simulación para análisis de colas y optimización de recursos.</p></div>
+<div><h4 class="text-white font-bold mb-3 font-display">Producto</h4><ul class="space-y-2 text-sm text-slate-400"><li><a href="docs.html" class="hover:text-blue-400">Documentación</a></li><li><a href="api.html" class="hover:text-blue-400">API</a></li><li><a href="status.html" class="hover:text-blue-400">Estado</a></li></ul></div>
+<div><h4 class="text-white font-bold mb-3 font-display">Legal</h4><ul class="space-y-2 text-sm text-slate-400"><li><a href="privacy.html" class="hover:text-blue-400">Privacidad</a></li><li><a href="terms.html" class="hover:text-blue-400">Términos</a></li></ul></div>
+</div><div class="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 mt-8 pt-6 border-t border-slate-900 text-center text-xs text-slate-600 font-mono uppercase tracking-widest">&copy; 2026 MMM.config · v2.1 · Lambayeque, Perú</div></footer>
+<script src="../js/pages.js"></script>
 </body>
 </html>

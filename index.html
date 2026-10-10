@@ -2,12 +2,28 @@
 <html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 1. Content Security Policy (CSP) -->
+    <!-- Permite scripts y estilos de CDNs confiables, y datos/imágenes necesarios. Se permite 'unsafe-inline' temporalmente por Tailwind CDN. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://unpkg.com; object-src 'none'; base-uri 'self'; form-action 'none';">
+    
+    <!-- 2. Referrer Policy -->
+    <!-- Protege la privacidad de la URL origen cuando se solicitan recursos externos -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
     <title>MMM.config - Simulation Suite</title>
+    <meta name="description" content="Simulador de colas M/M/s con visualización 3D, análisis financiero y comportamiento del cliente.">
+    <meta name="theme-color" content="#0f172a">
     
+    <!-- Tailwind CDN (Considera compilar CSS localmente para producción final) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- 3. Chart.js para las gráficas del reporte (Sin atributo integrity para evitar bloqueos del navegador) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -18,6 +34,7 @@
 
     <script src="js/theme-config.js"></script>
 
+    <!-- 4. Versionado explícito para Three.js -->
     <script type="importmap">
         { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
     </script>
@@ -25,310 +42,249 @@
 
 <body class="bg-slate-100 text-slate-800 dark:bg-slate-900 dark:text-white h-[100dvh] flex transition-colors duration-300 overflow-hidden font-sans">
 
-    <div id="landing-page" class="fixed inset-0 z-50 overflow-y-auto custom-scroll bg-slate-900/95 backdrop-blur-sm">
-        
-        <div class="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none z-[-1]"></div>
-        <div class="fixed inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-[#0f172a] z-[-2]"></div>
-        <div class="fixed top-0 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
-        <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none z-[-1]"></div>
+    <div id="landing-page" class="fixed inset-0 z-50 overflow-y-auto custom-scroll bg-slate-950 text-slate-200">
 
-        <nav class="sticky top-0 z-50 w-full border-b border-white/5 bg-slate-900/80 backdrop-blur-md">
-            <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display">M</div>
-                    <span class="font-display font-bold text-lg tracking-tight text-white">MMM.config</span>
-                </div>
-                <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+        <!-- Fondo -->
+        <div class="fixed inset-0 -z-10 pointer-events-none" aria-hidden="true">
+            <div class="absolute inset-0 opacity-[0.07]" style="background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse at top,#000 30%,transparent 75%);mask-image:radial-gradient(ellipse at top,#000 30%,transparent 75%)"></div>
+            <div class="absolute -top-32 left-1/4 w-[28rem] h-[28rem] bg-blue-600/25 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-600/15 rounded-full blur-[120px]"></div>
+        </div>
+
+        <!-- Navegación -->
+        <header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
+            <div class="relative w-full px-4 md:px-8 lg:px-12 h-16 flex items-center justify-between">
+                <a href="#top" class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black font-display shadow-lg shadow-blue-500/30">M</span>
+                    <span class="font-display font-bold text-lg sm:text-xl tracking-tight text-white">MMM.config</span>
+                </a>
+                <nav class="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-5 xl:gap-8 text-sm font-medium text-slate-400" aria-label="Principal">
                     <a href="#features" class="hover:text-white transition-colors">Capacidades</a>
-                    <a href="#industries" class="hover:text-white transition-colors">Industrias</a>
+                    <a href="#params" class="hover:text-white transition-colors">Parámetros</a>
+                    <a href="#industries" class="hover:text-white transition-colors">Escenarios</a>
                     <a href="#tech-specs" class="hover:text-white transition-colors">Motor</a>
                     <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+                    <a href="pages/docs.html" class="hover:text-white transition-colors">Docs</a>
+                </nav>
+                <div class="flex items-center gap-2">
+                    <button type="button" data-action="toggle-menu" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú" class="lg:hidden w-10 h-10 rounded-lg border border-white/10 text-white flex items-center justify-center"><span class="material-icons-round">menu</span></button>
                 </div>
-                <a href="#models" class="px-4 py-2 bg-white text-slate-900 text-xs font-bold rounded-full hover:bg-blue-50 transition-colors">
-                    Lanzar App
-                </a>
             </div>
-        </nav>
+            <nav id="mobile-menu" class="hidden lg:hidden border-t border-white/10 bg-slate-950/95 px-5 py-4 space-y-1 text-slate-300" aria-label="Móvil">
+                <a href="#features" class="block py-3 border-b border-white/5">Capacidades</a>
+                <a href="#params" class="block py-3 border-b border-white/5">Parámetros</a>
+                <a href="#industries" class="block py-3 border-b border-white/5">Escenarios</a>
+                <a href="#tech-specs" class="block py-3 border-b border-white/5">Motor</a>
+                <a href="#faq" class="block py-3 border-b border-white/5">FAQ</a>
+                <a href="pages/docs.html" class="block py-3 mb-2">Docs</a>
+            </nav>
+        </header>
 
-        <div class="w-full flex flex-col items-center">
-            
-            <section class="min-h-[85vh] flex flex-col items-center justify-center p-6 text-center max-w-5xl mx-auto relative">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold tracking-widest uppercase mb-8 animate-[slideUp_0.8s_ease-out]">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    System Online v2.1
+        <!-- Hero -->
+        <section id="top" class="max-w-7xl mx-auto px-5 lg:px-8 pt-12 pb-16 lg:pt-24 lg:pb-24 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center scroll-mt-16">
+            <div class="text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-[10px] font-mono font-bold tracking-widest uppercase mb-6">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Simulador M/M/s · v2.1
                 </div>
-                
-                <h1 class="font-display text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter drop-shadow-2xl leading-tight">
-                    Simulación de <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Alto Rendimiento</span>
+                <h1 class="font-display text-4xl sm:text-6xl xl:text-7xl font-black text-white tracking-tighter leading-[1.05] mb-6">
+                    Simula tus colas.<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Decide con datos.</span>
                 </h1>
-                
-                <p class="text-slate-400 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto leading-relaxed mb-10">
-                    Analiza colas, optimiza costos y predice el comportamiento humano con nuestro motor estocástico de última generación.
+                <p class="text-slate-400 text-base sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
+                    Modela cajas, ventanillas o consultorios en 3D, mide el impacto financiero y descubre cómo se comportan clientes reales cuando la fila se alarga.
                 </p>
-
-                <div class="flex flex-col md:flex-row gap-4 mb-16">
-                    <a href="#models" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition-all hover:scale-105 flex items-center justify-center gap-2">
-                        <span class="material-icons-round">play_arrow</span> Iniciar Simulación
-                    </a>
-                    <a href="#tech-specs" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-2">
-                        <span class="material-icons-round">code</span> Ver Arquitectura
-                    </a>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                    <a href="#models" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition hover:-translate-y-0.5 flex items-center justify-center gap-2"><span class="material-icons-round">play_arrow</span> Iniciar simulación</a>
+                    <a href="#how" class="px-8 py-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl border border-white/10 transition flex items-center justify-center gap-2"><span class="material-icons-round">explore</span> Cómo funciona</a>
                 </div>
+                <p class="mt-5 text-xs text-slate-500 font-mono">Sin instalación · Corre en tu navegador</p>
+            </div>
 
-                <div class="w-full grid grid-cols-2 md:grid-cols-4 gap-8 py-8 border-t border-white/5">
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-white mb-1">10k+</div>
-                        <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Simulaciones</div>
+            <!-- Vista previa del simulador (decorativa) -->
+            <div class="relative reveal" aria-hidden="true">
+                <div class="absolute -inset-4 bg-gradient-to-tr from-blue-600/30 to-purple-600/20 blur-3xl rounded-[2rem]"></div>
+                <div class="relative rounded-2xl border border-white/10 bg-slate-900/80 backdrop-blur shadow-2xl overflow-hidden">
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                        <div class="flex gap-1.5"><span class="block w-2.5 h-2.5 rounded-full bg-red-400/80"></span><span class="block w-2.5 h-2.5 rounded-full bg-amber-400/80"></span><span class="block w-2.5 h-2.5 rounded-full bg-emerald-400/80"></span></div>
+                        <span class="font-mono text-[11px] text-slate-500">simulacion_en_vivo</span>
+                        <span class="font-mono text-[11px] text-emerald-400 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>LIVE</span>
                     </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-white mb-1">99.9%</div>
-                        <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Precisión Poisson</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-white mb-1">&lt;50ms</div>
-                        <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Latencia de Motor</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl font-bold text-white mb-1">WebGL</div>
-                        <div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest">Render Nativo</div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="features" class="w-full py-24 border-y border-white/5 bg-slate-900/50">
-                <div class="max-w-7xl mx-auto px-6">
-                    <div class="text-center mb-16">
-                        <h2 class="text-3xl font-display font-bold text-white mb-4">Potencia Industrial</h2>
-                        <p class="text-slate-400 max-w-xl mx-auto">Diseñado para ingenieros y analistas que requieren precisión matemática.</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div class="p-8 rounded-2xl bg-slate-800/20 border border-slate-700/50 hover:border-blue-500/30 transition-colors group">
-                            <div class="w-12 h-12 bg-blue-900/30 rounded-lg flex items-center justify-center mb-6 text-blue-400 group-hover:text-blue-300">
-                                <span class="material-icons-round text-2xl">view_in_ar</span>
-                            </div>
-                            <h3 class="text-xl font-bold text-white mb-3">Visualización 3D</h3>
-                            <p class="text-slate-400 text-sm leading-relaxed">Renderizado en tiempo real de entidades, colas y servidores utilizando WebGL para un análisis espacial inmediato.</p>
+                    <div class="p-4 sm:p-6 space-y-5">
+                        <div class="grid grid-cols-3 gap-3 text-center">
+                            <div class="rounded-xl bg-slate-950/60 border border-white/5 py-3"><div class="text-[10px] text-slate-500 font-mono uppercase">Reloj</div><div class="font-mono text-lg font-bold text-white">04:20</div></div>
+                            <div class="rounded-xl bg-slate-950/60 border border-white/5 py-3"><div class="text-[10px] text-fuchsia-400 font-mono uppercase">VIP</div><div class="font-mono text-lg font-bold text-white">3</div></div>
+                            <div class="rounded-xl bg-slate-950/60 border border-white/5 py-3"><div class="text-[10px] text-amber-400 font-mono uppercase">Gral</div><div class="font-mono text-lg font-bold text-white">11</div></div>
                         </div>
-                        <div class="p-8 rounded-2xl bg-slate-800/20 border border-slate-700/50 hover:border-emerald-500/30 transition-colors group">
-                            <div class="w-12 h-12 bg-emerald-900/30 rounded-lg flex items-center justify-center mb-6 text-emerald-400 group-hover:text-emerald-300">
-                                <span class="material-icons-round text-2xl">payments</span>
-                            </div>
-                            <h3 class="text-xl font-bold text-white mb-3">Impacto Financiero</h3>
-                            <p class="text-slate-400 text-sm leading-relaxed">Cálculo dinámico de ROI, costos operativos y pérdidas por oportunidad en base a parámetros configurables.</p>
+                        <div class="rounded-xl bg-slate-950/60 border border-white/5 p-4 grid grid-cols-5 gap-2">
+                            <div class="flex flex-col items-center gap-2"><span class="w-full h-9 rounded-lg bg-fuchsia-500/80 animate-pulse"></span><span class="w-2.5 h-2.5 rounded-full bg-fuchsia-300"></span><span class="w-2.5 h-2.5 rounded-full bg-fuchsia-300"></span></div>
+                            <div class="flex flex-col items-center gap-2"><span class="w-full h-9 rounded-lg bg-blue-500/80 animate-pulse [animation-delay:.3s]"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span></div>
+                            <div class="flex flex-col items-center gap-2"><span class="w-full h-9 rounded-lg bg-blue-500/80 animate-pulse [animation-delay:.6s]"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span></div>
+                            <div class="flex flex-col items-center gap-2"><span class="w-full h-9 rounded-lg bg-blue-500/30"></span></div>
+                            <div class="flex flex-col items-center gap-2"><span class="w-full h-9 rounded-lg bg-blue-500/80 animate-pulse [animation-delay:.9s]"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span><span class="w-2.5 h-2.5 rounded-full bg-blue-300"></span></div>
                         </div>
-                        <div class="p-8 rounded-2xl bg-slate-800/20 border border-slate-700/50 hover:border-purple-500/30 transition-colors group">
-                            <div class="w-12 h-12 bg-purple-900/30 rounded-lg flex items-center justify-center mb-6 text-purple-400 group-hover:text-purple-300">
-                                <span class="material-icons-round text-2xl">psychology</span>
-                            </div>
-                            <h3 class="text-xl font-bold text-white mb-3">Factor Humano</h3>
-                            <p class="text-slate-400 text-sm leading-relaxed">Algoritmos de impaciencia (Reneging) y rechazo (Balking) que simulan el comportamiento real del cliente.</p>
+                        <div class="flex items-end gap-1.5 h-14">
+                            <span class="flex-1 rounded-t bg-blue-500/40" style="height:35%"></span><span class="flex-1 rounded-t bg-blue-500/40" style="height:50%"></span><span class="flex-1 rounded-t bg-blue-500/50" style="height:45%"></span><span class="flex-1 rounded-t bg-blue-500/60" style="height:70%"></span><span class="flex-1 rounded-t bg-purple-500/60" style="height:90%"></span><span class="flex-1 rounded-t bg-purple-500/70" style="height:100%"></span><span class="flex-1 rounded-t bg-blue-500/60" style="height:75%"></span><span class="flex-1 rounded-t bg-blue-500/50" style="height:55%"></span>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section id="industries" class="w-full py-24 bg-slate-950">
-                <div class="max-w-7xl mx-auto px-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                        <div>
-                            <span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase mb-2 block">Aplicaciones Reales</span>
-                            <h2 class="text-4xl font-display font-bold text-white mb-6">Optimizado para entornos críticos</h2>
-                            <p class="text-slate-400 mb-8 leading-relaxed">
-                                Desde el sector bancario hasta la logística sanitaria, MMM.config adapta sus modelos matemáticos para resolver problemas de congestión reales.
-                            </p>
-                            
-                            <div class="space-y-6">
-                                <div class="flex gap-4">
-                                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 text-white shrink-0">
-                                        <span class="material-icons-round">account_balance</span>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-white font-bold">Banca y Finanzas</h4>
-                                        <p class="text-sm text-slate-500">Optimización de ventanillas y reducción de tiempos de espera en horas pico.</p>
-                                    </div>
-                                </div>
-                                <div class="flex gap-4">
-                                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 text-white shrink-0">
-                                        <span class="material-icons-round">local_hospital</span>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-white font-bold">Salud y Clínicas</h4>
-                                        <p class="text-sm text-slate-500">Gestión de flujo de pacientes en triaje y asignación de consultorios.</p>
-                                    </div>
-                                </div>
-                                <div class="flex gap-4">
-                                    <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 text-white shrink-0">
-                                        <span class="material-icons-round">shopping_cart</span>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-white font-bold">Retail</h4>
-                                        <p class="text-sm text-slate-500">Balanceo de cajas rápidas vs. tradicionales para maximizar el ROI.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 rounded-3xl blur-2xl"></div>
-                            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 relative overflow-hidden h-96 flex items-center justify-center">
-                                <div class="grid grid-cols-3 gap-4 opacity-50">
-                                    <div class="w-20 h-32 bg-slate-800 rounded-lg animate-pulse"></div>
-                                    <div class="w-20 h-24 bg-blue-900/50 rounded-lg mt-8"></div>
-                                    <div class="w-20 h-40 bg-slate-800 rounded-lg"></div>
-                                </div>
-                                <div class="absolute bottom-6 right-6 bg-slate-800/80 backdrop-blur-md px-4 py-2 rounded-lg border border-slate-700 text-xs font-mono text-white">
-                                    System Status: Optimal
-                                </div>
-                            </div>
-                        </div>
+        <!-- Datos clave -->
+        <section class="border-y border-white/5 bg-white/[0.02]">
+            <div class="max-w-7xl mx-auto px-5 lg:px-8 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div><div class="text-2xl font-bold text-white">M/M/s</div><div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest mt-1">Modelo de colas</div></div>
+                <div><div class="text-2xl font-bold text-white">2</div><div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest mt-1">Modelos de simulación</div></div>
+                <div><div class="text-2xl font-bold text-white">3D</div><div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest mt-1">Vista en tiempo real</div></div>
+                <div><div class="text-2xl font-bold text-white">ROI</div><div class="text-[10px] text-slate-500 font-mono uppercase tracking-widest mt-1">Reporte financiero</div></div>
+            </div>
+        </section>
+
+        <!-- Capacidades -->
+        <section id="features" class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24 scroll-mt-16">
+            <div class="text-center mb-12">
+                <span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Capacidades</span>
+                <h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2 mb-3">Todo lo que necesitas para dimensionar</h2>
+                <p class="text-slate-400 max-w-xl mx-auto">Pensado para ingenieros, analistas y dueños de negocio que necesitan números, no intuición.</p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div class="reveal p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 transition-colors"><div class="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-4"><span class="material-icons-round">view_in_ar</span></div><h3 class="font-bold text-white mb-2">Visualización 3D</h3><p class="text-sm text-slate-400 leading-relaxed">Servidores, colas y clientes en tiempo real con WebGL. Orbita, acerca y entiende el flujo de un vistazo.</p></div>
+                <div class="reveal p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-emerald-500/40 transition-colors"><div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4"><span class="material-icons-round">payments</span></div><h3 class="font-bold text-white mb-2">Impacto financiero</h3><p class="text-sm text-slate-400 leading-relaxed">Ingresos, costos, horas extra y ROI calculados con tus propios ticket e insumos.</p></div>
+                <div class="reveal p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-purple-500/40 transition-colors"><div class="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center mb-4"><span class="material-icons-round">psychology</span></div><h3 class="font-bold text-white mb-2">Factor humano</h3><p class="text-sm text-slate-400 leading-relaxed">Impaciencia (reneging) y rechazo (balking): mide cuántas ventas pierdes por filas largas.</p></div>
+                <div class="reveal p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-fuchsia-500/40 transition-colors"><div class="w-11 h-11 rounded-xl bg-fuchsia-500/10 text-fuchsia-400 flex items-center justify-center mb-4"><span class="material-icons-round">star</span></div><h3 class="font-bold text-white mb-2">Cajas VIP</h3><p class="text-sm text-slate-400 leading-relaxed">Define cuántas cajas son preferenciales y qué porcentaje de clientes es VIP.</p></div>
+                <div class="reveal p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-orange-500/40 transition-colors"><div class="w-11 h-11 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center mb-4"><span class="material-icons-round">local_fire_department</span></div><h3 class="font-bold text-white mb-2">Hora pico</h3><p class="text-sm text-slate-400 leading-relaxed">Triplica la llegada de clientes con un clic y observa cómo responde tu operación.</p></div>
+                <div class="reveal p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-cyan-500/40 transition-colors"><div class="w-11 h-11 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-4"><span class="material-icons-round">analytics</span></div><h3 class="font-bold text-white mb-2">Reporte ejecutivo</h3><p class="text-sm text-slate-400 leading-relaxed">Espera promedio, cola máxima, ocupación del personal y un diagnóstico al terminar.</p></div>
+            </div>
+        </section>
+
+        <!-- Parámetros -->
+        <section id="params" class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24 scroll-mt-16">
+            <div class="text-center mb-12"><span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Parámetros</span><h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2 mb-3">Controlas cada variable de la operación</h2><p class="text-slate-400 max-w-xl mx-auto">Todos los campos se validan al editarlos y se reflejan al instante en la escena 3D.</p></div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">λ · Llegadas</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">1–1000 /h</span></div><p class="text-sm text-slate-400 leading-relaxed">Clientes que llegan por hora (proceso de Poisson).</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">μ · Atención</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">1–1000 /h</span></div><p class="text-sm text-slate-400 leading-relaxed">Clientes que atiende cada servidor por hora (tiempos exponenciales).</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">s · Servidores</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">1–20</span></div><p class="text-sm text-slate-400 leading-relaxed">Cajas, ventanillas o consultorios trabajando en paralelo.</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">Colas generales</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">1–10</span></div><p class="text-sm text-slate-400 leading-relaxed">Filas para clientes no VIP; cada cliente elige la más corta.</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">Horas a simular</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">1–24 h</span></div><p class="text-sm text-slate-400 leading-relaxed">Duración de la jornada. Al cerrar se atiende lo que quede en cola (horas extra).</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">Cajas VIP</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">0 – s</span></div><p class="text-sm text-slate-400 leading-relaxed">Servidores preferenciales con su propia cola.</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">% clientes VIP</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">0–100 %</span></div><p class="text-sm text-slate-400 leading-relaxed">Proporción de llegadas que entra a la cola VIP.</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">Ticket promedio</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">$</span></div><p class="text-sm text-slate-400 leading-relaxed">Ingreso por cliente atendido.</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">Costo de insumo</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">$</span></div><p class="text-sm text-slate-400 leading-relaxed">Costo variable por cliente atendido.</p></div><div class="reveal p-5 rounded-2xl bg-white/[0.03] border border-white/10"><div class="flex items-start justify-between gap-3 mb-2"><h3 class="font-bold text-white">Paciencia y tolerancia</h3><span class="font-mono text-[11px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 whitespace-nowrap">1–240 min · 1–100</span></div><p class="text-sm text-slate-400 leading-relaxed">Solo modelo conductual: cuánto espera un cliente y cuán larga puede ser la fila antes de que rechacen entrar.</p></div></div>
+            <div class="mt-6 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5 flex gap-4 items-start"><span class="material-icons-round text-blue-400">speed</span><p class="text-sm text-slate-300 leading-relaxed"><strong class="text-white">Intensidad de tráfico ρ = λ / (s·μ).</strong> El panel la calcula mientras escribes: por debajo de 0.70 hay holgura, de 0.70 a 0.90 la carga es alta pero estable, de 0.90 a 1 estás al límite y desde 1 la cola crece sin control.</p></div>
+        </section>
+
+        <!-- Cómo funciona -->
+        <section id="how" class="border-y border-white/5 bg-white/[0.02] scroll-mt-16">
+            <div class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24">
+                <div class="text-center mb-12">
+                    <span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Cómo funciona</span>
+                    <h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2">De la idea al reporte en 3 pasos</h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="reveal text-center md:text-left"><div class="font-mono text-5xl font-bold text-blue-500/30 mb-3">01</div><h3 class="text-lg font-bold text-white mb-2">Configura</h3><p class="text-sm text-slate-400 leading-relaxed">Elige el modelo y define llegadas (λ), atención (μ), servidores, colas y datos financieros.</p></div>
+                    <div class="reveal text-center md:text-left" style="--d:.1s"><div class="font-mono text-5xl font-bold text-purple-500/30 mb-3">02</div><h3 class="text-lg font-bold text-white mb-2">Simula</h3><p class="text-sm text-slate-400 leading-relaxed">Mira la operación en 3D. Pausa, cambia la velocidad (x1, x5, TURBO) o activa la hora pico.</p></div>
+                    <div class="reveal text-center md:text-left" style="--d:.2s"><div class="font-mono text-5xl font-bold text-emerald-500/30 mb-3">03</div><h3 class="text-lg font-bold text-white mb-2">Analiza</h3><p class="text-sm text-slate-400 leading-relaxed">Recibe el reporte con ROI, esperas y costos de horas extra, y prueba otra configuración.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reporte -->
+        <section id="report-info" class="border-y border-white/5 bg-white/[0.02] scroll-mt-16"><div class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24">
+            <div class="text-center mb-12"><span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Resultados</span><h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2 mb-3">Un reporte que se entiende sin ser estadístico</h2><p class="text-slate-400 max-w-xl mx-auto">Al terminar la jornada y vaciarse la cola se abre el reporte con estas métricas y una gráfica de la cola en el tiempo.</p></div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4"><div class="reveal flex gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10"><span class="material-icons-round text-emerald-400 mt-0.5">payments</span><div><h3 class="font-bold text-white mb-1">Ingresos, costos y ROI</h3><p class="text-sm text-slate-400 leading-relaxed">Nómina base, horas extra e insumos frente a lo vendido.</p></div></div><div class="reveal flex gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10"><span class="material-icons-round text-emerald-400 mt-0.5">timer</span><div><h3 class="font-bold text-white mb-1">Espera promedio</h3><p class="text-sm text-slate-400 leading-relaxed">Minutos desde que llega el cliente hasta que empieza a ser atendido.</p></div></div><div class="reveal flex gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10"><span class="material-icons-round text-emerald-400 mt-0.5">groups</span><div><h3 class="font-bold text-white mb-1">Cola máxima</h3><p class="text-sm text-slate-400 leading-relaxed">El peor momento de la jornada: cuánta gente llegó a esperar a la vez.</p></div></div><div class="reveal flex gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10"><span class="material-icons-round text-emerald-400 mt-0.5">engineering</span><div><h3 class="font-bold text-white mb-1">Ocupación del personal</h3><p class="text-sm text-slate-400 leading-relaxed">Qué fracción del tiempo estuvieron ocupados tus servidores.</p></div></div><div class="reveal flex gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10"><span class="material-icons-round text-emerald-400 mt-0.5">more_time</span><div><h3 class="font-bold text-white mb-1">Horas extra</h3><p class="text-sm text-slate-400 leading-relaxed">Cuánto duró la cola tras el cierre y cuánto costó.</p></div></div><div class="reveal flex gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/10"><span class="material-icons-round text-emerald-400 mt-0.5">person_off</span><div><h3 class="font-bold text-white mb-1">Clientes perdidos</h3><p class="text-sm text-slate-400 leading-relaxed">Abandonos y rechazos, valorizados al ticket (modelo conductual).</p></div></div></div>
+            <p class="mt-6 text-center text-sm text-slate-500">Más un diagnóstico automático que señala saturación y el peso de las horas extra en tus costos.</p>
+        </div></section>
+
+        <!-- Selección de entorno -->
+        <section id="models" class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24 scroll-mt-16">
+            <div class="text-center mb-12">
+                <span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Launchpad</span>
+                <h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2 mb-3">Elige tu entorno</h2>
+                <p class="text-slate-400">Empieza con el modelo que mejor se ajuste a tu análisis.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div data-mode="standard" role="button" tabindex="0" class="group cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-400 bg-slate-800/40 border border-slate-700 hover:border-blue-500 rounded-3xl p-7 transition duration-300 md:hover:-translate-y-2 shadow-xl hover:shadow-blue-500/20 flex flex-col">
+                    <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-5 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors border border-blue-500/20"><span class="material-icons-round text-3xl">query_stats</span></div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Modelo Ingeniería</h3>
+                    <p class="text-slate-400 text-sm mb-6 flex-1">Cálculo puro de M/M/s para dimensionamiento y evaluación de costos operativos.</p>
+                    <div class="pt-5 border-t border-white/5 flex items-center justify-between text-blue-400 text-sm font-bold"><span>INICIAR SISTEMA</span><span class="material-icons-round group-hover:translate-x-1 transition-transform">arrow_forward</span></div>
+                </div>
+                <div data-mode="psych" role="button" tabindex="0" class="group cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-purple-400 bg-slate-800/40 border border-slate-700 hover:border-purple-500 rounded-3xl p-7 transition duration-300 md:hover:-translate-y-2 shadow-xl hover:shadow-purple-500/20 flex flex-col">
+                    <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-5 text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors border border-purple-500/20"><span class="material-icons-round text-3xl">psychology</span></div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Modelo Conductual</h3>
+                    <p class="text-slate-400 text-sm mb-6 flex-1">Simula impaciencia (Reneging) y rechazo (Balking). Ideal para analizar pérdida de clientes.</p>
+                    <div class="pt-5 border-t border-white/5 flex items-center justify-between text-purple-400 text-sm font-bold"><span>INICIAR SISTEMA</span><span class="material-icons-round group-hover:translate-x-1 transition-transform">arrow_forward</span></div>
+                </div>
+                <div aria-disabled="true" class="relative bg-slate-900/40 border border-slate-800 rounded-3xl p-7 cursor-not-allowed opacity-60 flex flex-col">
+                    <span class="absolute top-4 right-4 bg-slate-800 text-slate-400 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-slate-700">Próximamente</span>
+                    <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-5 text-slate-500 border border-slate-700"><span class="material-icons-round text-3xl">science</span></div>
+                    <h3 class="text-2xl font-bold text-slate-400 mb-2">Modelo Experimental</h3>
+                    <p class="text-slate-500 text-sm mb-6 flex-1">Redes de Jackson abiertas y cerradas con múltiples nodos de servicio interconectados.</p>
+                    <div class="pt-5 border-t border-slate-800 flex items-center justify-between text-slate-500 text-sm font-bold"><span>NO DISPONIBLE</span><span class="material-icons-round">lock</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparativa -->
+        <section id="compare" class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24 scroll-mt-16">
+            <div class="text-center mb-12"><span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Modelos</span><h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2 mb-3">¿Cuál elegir?</h2><p class="text-slate-400 max-w-xl mx-auto">Empieza con Ingeniería para dimensionar y pasa a Conductual para ver qué pasa cuando la gente se cansa de esperar.</p></div>
+            <div class="overflow-x-auto rounded-2xl border border-white/10"><table class="w-full text-sm text-left"><thead class="bg-white/[0.04] text-slate-400 text-xs uppercase tracking-wider"><tr><th class="px-4 py-3">Característica</th><th class="px-4 py-3 text-blue-400">Ingeniería</th><th class="px-4 py-3 text-purple-400">Conductual</th></tr></thead><tbody><tr class="border-t border-white/10"><td class="px-4 py-3 font-semibold text-white">Clientes impacientes (reneging)</td><td class="px-4 py-3 text-slate-400">No</td><td class="px-4 py-3 text-slate-400">Sí, paciencia ±20 % alrededor de la configurada</td></tr><tr class="border-t border-white/10"><td class="px-4 py-3 font-semibold text-white">Rechazo por fila larga (balking)</td><td class="px-4 py-3 text-slate-400">No</td><td class="px-4 py-3 text-slate-400">Sí, 70 % de rechazo si la cola supera tolerancia × nº de colas</td></tr><tr class="border-t border-white/10"><td class="px-4 py-3 font-semibold text-white">Ventas perdidas</td><td class="px-4 py-3 text-slate-400">No se miden</td><td class="px-4 py-3 text-slate-400">Se valorizan al ticket</td></tr><tr class="border-t border-white/10"><td class="px-4 py-3 font-semibold text-white">Cola</td><td class="px-4 py-3 text-slate-400">Sin límite</td><td class="px-4 py-3 text-slate-400">Sin límite, pero con fuga de clientes</td></tr><tr class="border-t border-white/10"><td class="px-4 py-3 font-semibold text-white">Ideal para</td><td class="px-4 py-3 text-slate-400">Dimensionar y costos base</td><td class="px-4 py-3 text-slate-400">Estimar pérdidas por esperas largas</td></tr></tbody></table></div>
+        </section>
+
+        <!-- Escenarios -->
+        <section id="industries" class="border-y border-white/5 bg-slate-950 scroll-mt-16"><div class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24">
+            <div class="text-center mb-12"><span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Escenarios rápidos</span><h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2 mb-3">Puntos de partida para entornos donde esperar cuesta dinero</h2><p class="text-slate-400 max-w-xl mx-auto">Disponibles como botones en el panel del simulador. Son valores ilustrativos: ajústalos a tu caso.</p></div>
+            <div class="grid md:grid-cols-3 gap-5"><div class="reveal p-6 rounded-2xl bg-slate-900 border border-slate-800"><span class="material-icons-round text-blue-400 text-3xl mb-3 block">account_balance</span><h3 class="font-bold text-white text-lg mb-1">Banco</h3><p class="text-sm text-slate-400 mb-4">4 ventanillas · 2 colas · 1 VIP (20 %)</p><dl class="grid grid-cols-2 gap-3 text-xs font-mono"><div><dt class="text-slate-500">λ</dt><dd class="text-white">52 /h</dd></div><div><dt class="text-slate-500">μ</dt><dd class="text-white">15 /h</dd></div><div><dt class="text-slate-500">Jornada</dt><dd class="text-white">8 h</dd></div><div><dt class="text-slate-500">ρ</dt><dd class="text-blue-400">0.87</dd></div></dl></div><div class="reveal p-6 rounded-2xl bg-slate-900 border border-slate-800"><span class="material-icons-round text-emerald-400 text-3xl mb-3 block">local_hospital</span><h3 class="font-bold text-white text-lg mb-1">Clínica</h3><p class="text-sm text-slate-400 mb-4">4 consultorios · 1 cola · sin VIP</p><dl class="grid grid-cols-2 gap-3 text-xs font-mono"><div><dt class="text-slate-500">λ</dt><dd class="text-white">18 /h</dd></div><div><dt class="text-slate-500">μ</dt><dd class="text-white">6 /h</dd></div><div><dt class="text-slate-500">Jornada</dt><dd class="text-white">10 h</dd></div><div><dt class="text-slate-500">ρ</dt><dd class="text-emerald-400">0.75</dd></div></dl></div><div class="reveal p-6 rounded-2xl bg-slate-900 border border-slate-800"><span class="material-icons-round text-purple-400 text-3xl mb-3 block">shopping_cart</span><h3 class="font-bold text-white text-lg mb-1">Retail</h3><p class="text-sm text-slate-400 mb-4">6 cajas · 3 colas · 1 VIP (15 %)</p><dl class="grid grid-cols-2 gap-3 text-xs font-mono"><div><dt class="text-slate-500">λ</dt><dd class="text-white">100 /h</dd></div><div><dt class="text-slate-500">μ</dt><dd class="text-white">20 /h</dd></div><div><dt class="text-slate-500">Jornada</dt><dd class="text-white">8 h</dd></div><div><dt class="text-slate-500">ρ</dt><dd class="text-purple-400">0.83</dd></div></dl></div></div>
+        </div></section>
+
+        <!-- Motor -->
+        <section id="tech-specs" class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24 scroll-mt-16">
+            <div class="rounded-3xl border border-slate-700 bg-slate-800/40 p-6 sm:p-10 grid lg:grid-cols-2 gap-10 items-center">
+                <div>
+                    <span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Engine Architecture</span>
+                    <h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2 mb-4">Lógica estocástica</h2>
+                    <p class="text-slate-300 leading-relaxed mb-6">El núcleo <strong>MMM</strong> avanza en pasos de tiempo fijos. Las llegadas siguen un proceso de Poisson y los tiempos de servicio una distribución exponencial, con reloj propio para las horas extra.</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50"><div class="text-2xl font-bold text-white">M/M/s</div><div class="text-xs text-slate-500 font-mono">Notación de Kendall</div></div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50"><div class="text-2xl font-bold text-white">ρ</div><div class="text-xs text-slate-500 font-mono">Intensidad de tráfico</div></div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50"><div class="text-2xl font-bold text-white">0.004 h</div><div class="text-xs text-slate-500 font-mono">Paso de tiempo (~14 s)</div></div>
+                        <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50"><div class="text-2xl font-bold text-white">Exp(μ)</div><div class="text-xs text-slate-500 font-mono">Tiempo de servicio</div></div>
                     </div>
                 </div>
-            </section>
-
-            <section id="tech-specs" class="w-full py-24 px-6 flex justify-center">
-                <div class="w-full max-w-6xl bg-slate-800/40 backdrop-blur-xl border border-slate-700 rounded-3xl p-1 md:p-10 shadow-2xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10 p-6">
-                        <div class="space-y-8 flex flex-col justify-center">
-                            <div>
-                                <h4 class="text-blue-500 font-mono font-bold text-xs uppercase tracking-widest mb-2">Engine Architecture</h4>
-                                <h2 class="text-4xl font-display font-bold text-white mb-4">Lógica Estocástica</h2>
-                                <p class="text-slate-300 leading-loose text-justify">
-                                    El núcleo <strong>MMM</strong> opera sobre un bucle de simulación delta-time. Integramos variables aleatorias para los tiempos de llegada (Poisson) y servicio (Exponencial).
-                                </p>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
-                                    <div class="text-2xl font-bold text-white mb-1">M/M/s</div>
-                                    <div class="text-xs text-slate-500 font-mono">Notación Kendall</div>
-                                </div>
-                                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
-                                    <div class="text-2xl font-bold text-white mb-1">60FPS</div>
-                                    <div class="text-xs text-slate-500 font-mono">Tasa de Refresco</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="relative group">
-                            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                            <div class="relative bg-slate-950 rounded-xl p-6 border border-slate-800 font-mono text-sm shadow-2xl">
-                                <div class="flex items-center gap-2 mb-6 border-b border-slate-800 pb-4">
-                                    <div class="text-slate-500 text-xs ml-2">core_math_module.js</div>
-                                </div>
-                                <div class="space-y-4 text-slate-300">
-                                    <div class="flex justify-between items-center p-2 hover:bg-slate-900 rounded transition-colors">
-                                        <span class="text-purple-400">const</span> <span>utilization</span>
-                                        <span class="text-slate-500">// ρ = λ / (s · μ)</span>
-                                    </div>
-                                    <div class="flex justify-between items-center p-2 hover:bg-slate-900 rounded transition-colors">
-                                        <span class="text-purple-400">const</span> <span>littlesLaw</span>
-                                        <span class="text-slate-500">// L = λ · W</span>
-                                    </div>
-                                    <div class="flex justify-between items-center p-2 hover:bg-slate-900 rounded transition-colors border-t border-slate-800 mt-2 pt-4">
-                                        <span class="text-emerald-400">return</span> <span>totalCost</span>
-                                        <span class="text-emerald-500 font-bold">TC = Cqh + Cws</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="bg-slate-950 rounded-xl p-5 border border-slate-800 font-mono text-sm shadow-2xl">
+                    <div class="text-slate-500 text-xs mb-4 pb-3 border-b border-slate-800">core_math_module.js</div>
+                    <div class="space-y-3 text-slate-300">
+                        <div class="flex flex-wrap justify-between gap-x-4 p-2"><span><span class="text-purple-400">const</span> utilization</span><span class="text-slate-500">// ρ = λ / (s · μ)</span></div>
+                        <div class="flex flex-wrap justify-between gap-x-4 p-2"><span><span class="text-purple-400">const</span> littlesLaw</span><span class="text-slate-500">// L = λ · W</span></div>
+                        <div class="flex flex-wrap justify-between gap-x-4 p-2 border-t border-slate-800 pt-4"><span><span class="text-emerald-400">return</span> totalCost</span><span class="text-emerald-500 font-bold">TC = Cq·h + Cw·s</span></div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section id="faq" class="w-full py-24 bg-slate-950/50 border-t border-slate-900">
-                <div class="max-w-4xl mx-auto px-6">
-                    <div class="text-center mb-12">
-                        <h2 class="text-3xl font-display font-bold text-white mb-2">Preguntas Frecuentes</h2>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                            <h4 class="text-white font-bold mb-2">¿Qué es un sistema M/M/s?</h4>
-                            <p class="text-slate-400 text-sm">Describe un sistema con llegadas Poisson, tiempos de servicio Exponenciales y 's' servidores.</p>
-                        </div>
-                        <div class="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                            <h4 class="text-white font-bold mb-2">¿Cómo funciona el ROI?</h4>
-                            <p class="text-slate-400 text-sm">Se calcula contrastando el Ticket Promedio vs el costo operativo durante la simulación.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        <!-- Recursos -->
+        <section id="resources" class="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24 scroll-mt-16">
+            <div class="text-center mb-12"><span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Recursos</span><h2 class="text-3xl sm:text-4xl font-display font-bold text-white mt-2 mb-3">Todo para sacarle provecho</h2></div>
+            <div class="grid md:grid-cols-3 gap-5"><a href="pages/docs.html" class="reveal group p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 transition-colors block"><span class="material-icons-round text-blue-400 mb-3 block">menu_book</span><h3 class="font-bold text-white mb-1 flex items-center gap-1">Documentación<span class="material-icons-round text-base opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span></h3><p class="text-sm text-slate-400">Parámetros, modelos, métricas y glosario.</p></a><a href="pages/api.html" class="reveal group p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 transition-colors block"><span class="material-icons-round text-blue-400 mb-3 block">code</span><h3 class="font-bold text-white mb-1 flex items-center gap-1">API del motor<span class="material-icons-round text-base opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span></h3><p class="text-sm text-slate-400">Usa QueueEngine desde tu propio código.</p></a><a href="pages/status.html" class="reveal group p-6 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 transition-colors block"><span class="material-icons-round text-blue-400 mb-3 block">monitor_heart</span><h3 class="font-bold text-white mb-1 flex items-center gap-1">Estado<span class="material-icons-round text-base opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span></h3><p class="text-sm text-slate-400">Comprueba si tu navegador es compatible.</p></a></div>
+        </section>
 
-            <section id="models" class="w-full max-w-6xl px-6 py-24">
-                <div class="text-center mb-16">
-                    <span class="text-blue-500 font-mono text-xs font-bold tracking-widest uppercase">Launchpad</span>
-                    <h2 class="text-4xl font-display font-bold text-white mt-2 mb-4">Seleccionar Entorno</h2>
+        <!-- FAQ -->
+        <section id="faq" class="border-t border-slate-900 bg-slate-950/50 scroll-mt-16">
+            <div class="max-w-3xl mx-auto px-5 py-16 lg:py-24">
+                <h2 class="text-3xl font-display font-bold text-white text-center mb-10">Preguntas frecuentes</h2>
+                <div class="space-y-3">
+                    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-5"><summary class="flex justify-between items-center cursor-pointer font-bold text-white list-none">¿Qué es un sistema M/M/s?<span class="material-icons-round text-slate-500 transition-transform group-open:rotate-180">expand_more</span></summary><p class="text-sm text-slate-400 mt-3 leading-relaxed">Un sistema con llegadas de Poisson, tiempos de servicio exponenciales y s servidores atendiendo en paralelo.</p></details>
+                    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-5"><summary class="flex justify-between items-center cursor-pointer font-bold text-white list-none">¿Cómo se calcula el ROI?<span class="material-icons-round text-slate-500 transition-transform group-open:rotate-180">expand_more</span></summary><p class="text-sm text-slate-400 mt-3 leading-relaxed">ROI = (ingresos − costos) / costos. Los costos suman nómina base (tarifa fija de $15/h por servidor), horas extra e insumos por cliente atendido.</p></details>
+                    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-5"><summary class="flex justify-between items-center cursor-pointer font-bold text-white list-none">¿Qué son reneging y balking?<span class="material-icons-round text-slate-500 transition-transform group-open:rotate-180">expand_more</span></summary><p class="text-sm text-slate-400 mt-3 leading-relaxed">Reneging es cuando un cliente abandona la fila por impaciencia; balking, cuando ni siquiera entra porque la fila es demasiado larga.</p></details>
+                    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-5"><summary class="flex justify-between items-center cursor-pointer font-bold text-white list-none">¿Necesito instalar algo?<span class="material-icons-round text-slate-500 transition-transform group-open:rotate-180">expand_more</span></summary><p class="text-sm text-slate-400 mt-3 leading-relaxed">No. Corre en el navegador; solo necesitas un dispositivo con soporte WebGL.</p></details>
+                    <details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-5"><summary class="flex justify-between items-center cursor-pointer font-bold text-white list-none">¿Por qué cada simulación da resultados distintos?<span class="material-icons-round text-slate-500 transition-transform group-open:rotate-180">expand_more</span></summary><p class="text-sm text-slate-400 mt-3 leading-relaxed">Porque las llegadas y los tiempos de servicio son aleatorios. Repite el escenario varias veces y compara promedios en vez de fiarte de una sola corrida.</p></details><details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-5"><summary class="flex justify-between items-center cursor-pointer font-bold text-white list-none">¿Qué pasa si ρ es 1 o mayor?<span class="material-icons-round text-slate-500 transition-transform group-open:rotate-180">expand_more</span></summary><p class="text-sm text-slate-400 mt-3 leading-relaxed">La demanda supera la capacidad: la cola crece durante la jornada y después del cierre hay que seguir atendiendo, lo que dispara las horas extra.</p></details><details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-5"><summary class="flex justify-between items-center cursor-pointer font-bold text-white list-none">¿Se guardan mis datos?<span class="material-icons-round text-slate-500 transition-transform group-open:rotate-180">expand_more</span></summary><p class="text-sm text-slate-400 mt-3 leading-relaxed">No. Todo corre en tu navegador. Solo se recuerda el tema claro/oscuro; los detalles están en la <a href="pages/privacy.html" class="text-blue-400 hover:underline">política de privacidad</a>.</p></details><details class="group rounded-2xl bg-slate-900/60 border border-slate-800 p-5"><summary class="flex justify-between items-center cursor-pointer font-bold text-white list-none">¿Funciona en celular?<span class="material-icons-round text-slate-500 transition-transform group-open:rotate-180">expand_more</span></summary><p class="text-sm text-slate-400 mt-3 leading-relaxed">Sí, la interfaz se adapta a pantallas pequeñas. Para escenas con muchos servidores y filas largas rinde mejor un equipo con aceleración de hardware.</p></details>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div onclick="enterApp('standard')" class="group cursor-pointer bg-slate-800/40 backdrop-blur-sm border border-slate-700 hover:border-blue-500 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-2 shadow-xl hover:shadow-blue-500/20 relative overflow-hidden flex flex-col h-full">
-                        <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors border border-blue-500/20">
-                            <span class="material-icons-round text-3xl">query_stats</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-white mb-3">Modelo Ingeniería</h3>
-                        <p class="text-slate-400 text-sm mb-8 flex-1">Cálculo puro de M/M/s para dimensionamiento y evaluación de costos operativos.</p>
-                        <div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between text-blue-400 text-sm font-bold">
-                            <span>INICIAR SISTEMA</span>
-                            <span class="material-icons-round transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                        </div>
-                    </div>
+            </div>
+        </section>
 
-                    <div onclick="enterApp('psych')" class="group cursor-pointer bg-slate-800/40 backdrop-blur-sm border border-slate-700 hover:border-purple-500 rounded-3xl p-8 transition-all duration-300 hover:-translate-y-2 shadow-xl hover:shadow-purple-500/20 relative overflow-hidden flex flex-col h-full">
-                        <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors border border-purple-500/20">
-                            <span class="material-icons-round text-3xl">psychology</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-white mb-3">Modelo Conductual</h3>
-                        <p class="text-slate-400 text-sm mb-8 flex-1">Simula impaciencia (Reneging) y rechazo (Balking). Ideal para analizar pérdida de clientes.</p>
-                        <div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between text-purple-400 text-sm font-bold">
-                            <span>INICIAR SISTEMA</span>
-                            <span class="material-icons-round transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                        </div>
-                    </div>
-
-                    <div class="group relative bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-3xl p-8 cursor-not-allowed opacity-60 overflow-hidden flex flex-col h-full">
-                        <div class="absolute top-4 right-4 bg-slate-800 text-slate-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest border border-slate-700">Próximamente</div>
-                        <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center mb-6 text-slate-600 border border-slate-700">
-                            <span class="material-icons-round text-3xl">science</span>
-                        </div>
-                        <h3 class="text-2xl font-bold text-slate-500 mb-3">Modelo Experimental</h3>
-                        <p class="text-slate-600 text-sm mb-8 flex-1">Redes de Jackson abiertas y cerradas con múltiples nodos de servicio interconectados.</p>
-                        <div class="mt-auto pt-6 border-t border-slate-800 flex items-center justify-between text-slate-700 text-sm font-bold">
-                            <span>NO DISPONIBLE</span>
-                            <span class="material-icons-round">lock</span>
-                        </div>
-                    </div>
+        <!-- Footer -->
+        <footer class="border-t border-slate-800 bg-slate-950/60 pt-12 pb-8">
+            <div class="max-w-7xl mx-auto px-5 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="col-span-2">
+                    <div class="flex items-center gap-2 mb-3"><span class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs">M</span><span class="font-bold text-white">MMM.config</span></div>
+                    <p class="text-slate-500 text-sm max-w-xs">Suite de simulación para análisis de colas y optimización de recursos.</p>
                 </div>
-            </section>
-
-            <footer class="w-full border-t border-slate-800 bg-slate-950/50 py-12 mt-12">
-                <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 text-left">
-                    <div class="col-span-1 md:col-span-2">
-                        <div class="flex items-center gap-2 mb-4">
-                            <div class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-xs">M</div>
-                            <span class="font-bold text-white">MMM.config</span>
-                        </div>
-                        <p class="text-slate-500 text-sm max-w-xs">Suite de simulación avanzada para análisis de colas y optimización de recursos empresariales.</p>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold mb-4 font-display">Plataforma</h4>
-                        <ul class="space-y-2 text-sm text-slate-400 font-mono">
-                            <li><a href="pages/docs.html" class="hover:text-blue-400 transition-colors">Documentación</a></li>
-                            <li><a href="pages/api.html" class="hover:text-blue-400 transition-colors">API Reference</a></li>
-                            <li><a href="pages/status.html" class="hover:text-blue-400 transition-colors flex items-center gap-2">Status <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span></a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-bold mb-4 font-display">Legal</h4>
-                        <ul class="space-y-2 text-sm text-slate-400 font-mono">
-                            <li><a href="pages/privacy.html" class="hover:text-blue-400 transition-colors">Privacidad</a></li>
-                            <li><a href="pages/terms.html" class="hover:text-blue-400 transition-colors">Términos</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-slate-900 text-center text-xs text-slate-600 font-mono uppercase tracking-widest">
-                    &copy; 2026 MMM.Config System v2.1 // All systems operational
-                </div>
-            </footer>
-        </div>
+                <div><h4 class="text-white font-bold mb-3 font-display">Plataforma</h4><ul class="space-y-2 text-sm text-slate-400"><li><a href="pages/docs.html" class="hover:text-blue-400">Documentación</a></li><li><a href="pages/api.html" class="hover:text-blue-400">API Reference</a></li><li><a href="pages/status.html" class="hover:text-blue-400">Status</a></li></ul></div>
+                <div><h4 class="text-white font-bold mb-3 font-display">Legal</h4><ul class="space-y-2 text-sm text-slate-400"><li><a href="pages/privacy.html" class="hover:text-blue-400">Privacidad</a></li><li><a href="pages/terms.html" class="hover:text-blue-400">Términos</a></li></ul></div>
+            </div>
+            <div class="max-w-7xl mx-auto px-5 lg:px-8 mt-10 pt-6 border-t border-slate-900 text-center text-xs text-slate-600 font-mono uppercase tracking-widest">&copy; 2026 MMM.config · v2.1</div>
+        </footer>
     </div>
 
     <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col z-40 shadow-2xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
@@ -337,36 +293,38 @@
             <div id="mode-badge" class="inline-block mt-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-widest bg-slate-100 text-slate-500 uppercase">STANDBY</div>
         </div>
         <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
-            <div class="space-y-4">
+            <div class="space-y-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/30 p-4">
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-700 pb-2">Capacidad Base</h3>
-                <div><label class="text-xs text-slate-500 mb-1 block">Llegada (λ) Clientes/h</label><input type="number" id="inp-lambda" value="40" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
-                <div><label class="text-xs text-slate-500 mb-1 block">Atención (μ) Clientes/h</label><input type="number" id="inp-mu" value="15" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                <div><span class="text-xs text-slate-500 mb-1 block">Escenarios rápidos</span><div class="grid grid-cols-3 gap-2"><button type="button" data-preset="banco" class="px-2 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-200 hover:bg-blue-600 hover:text-white transition-colors">Banco</button><button type="button" data-preset="clinica" class="px-2 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-200 hover:bg-blue-600 hover:text-white transition-colors">Clínica</button><button type="button" data-preset="retail" class="px-2 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-200 hover:bg-blue-600 hover:text-white transition-colors">Retail</button></div></div>
+                <div><label for="inp-lambda" class="text-xs text-slate-500 mb-1 block">Llegada (λ) Clientes/h</label><input type="number" id="inp-lambda" min="1" max="1000" step="any" value="40" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                <div><label for="inp-mu" class="text-xs text-slate-500 mb-1 block">Atención (μ) Clientes/h</label><input type="number" id="inp-mu" min="1" max="1000" step="any" value="15" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs text-slate-500 mb-1 block">Servidores</label><input type="number" id="inp-servers" value="5" min="1" max="20" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
-                    <div><label class="text-xs text-slate-500 mb-1 block">Colas</label><input type="number" id="inp-queues" value="3" min="1" max="10" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label for="inp-servers" class="text-xs text-slate-500 mb-1 block">Servidores</label><input type="number" id="inp-servers" value="5" min="1" max="20" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label for="inp-queues" class="text-xs text-slate-500 mb-1 block">Colas</label><input type="number" id="inp-queues" value="3" min="1" max="10" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
                 </div>
             </div>
-            <div class="space-y-4">
+            <div class="space-y-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/30 p-4">
                 <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-700 pb-2">Finanzas & Segmentación</h3>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs text-emerald-500 font-bold mb-1 block">Cajas VIP</label><input type="number" id="inp-vip-servers" value="1" min="0" class="w-full bg-slate-100 dark:bg-slate-800 border border-emerald-500/30 rounded-lg p-2.5 text-sm font-bold dark:text-white outline-none"></div>
-                    <div><label class="text-xs text-emerald-500 font-bold mb-1 block">% Clientes VIP</label><input type="number" id="inp-vip-percent" value="30" min="0" max="100" class="w-full bg-slate-100 dark:bg-slate-800 border border-emerald-500/30 rounded-lg p-2.5 text-sm font-bold dark:text-white outline-none"></div>
+                    <div><label for="inp-vip-servers" class="text-xs text-emerald-500 font-bold mb-1 block">Cajas VIP</label><input type="number" id="inp-vip-servers" max="20" value="1" min="0" class="w-full bg-slate-100 dark:bg-slate-800 border border-emerald-500/30 rounded-lg p-2.5 text-sm font-bold dark:text-white outline-none"></div>
+                    <div><label for="inp-vip-percent" class="text-xs text-emerald-500 font-bold mb-1 block">% Clientes VIP</label><input type="number" id="inp-vip-percent" value="30" min="0" max="100" class="w-full bg-slate-100 dark:bg-slate-800 border border-emerald-500/30 rounded-lg p-2.5 text-sm font-bold dark:text-white outline-none"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs text-slate-500 mb-1 block">Ticket Prom ($)</label><input type="number" id="inp-ticket" value="25.00" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
-                    <div><label class="text-xs text-slate-500 mb-1 block">Costo Insumo ($)</label><input type="number" id="inp-cost" value="2.50" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label for="inp-ticket" class="text-xs text-slate-500 mb-1 block">Ticket Prom ($)</label><input type="number" id="inp-ticket" min="0" step="0.01" value="25.00" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label for="inp-cost" class="text-xs text-slate-500 mb-1 block">Costo Insumo ($)</label><input type="number" id="inp-cost" min="0" step="0.01" value="2.50" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
                 </div>
             </div>
             <div>
-                <label class="text-xs text-slate-500 mb-1 block">Horas a Simular</label>
+                <label for="inp-hours-range" class="text-xs text-slate-500 mb-1 block">Horas a Simular</label>
                 <input type="range" id="inp-hours-range" min="1" max="24" value="8" class="w-full accent-blue-500 h-1 bg-slate-200 rounded-lg cursor-pointer">
                 <div class="flex justify-between text-xs text-slate-400 font-mono mt-1"><span id="lbl-hours">8h</span> <span>24h</span></div>
             </div>
+            <div class="rounded-xl border border-slate-200 dark:border-slate-700 p-3 text-xs" aria-live="polite"><div class="flex justify-between text-slate-500"><span>Intensidad de tráfico ρ</span><b id="rho-val" class="font-mono text-slate-700 dark:text-white">--</b></div><div class="h-1.5 rounded bg-slate-200 dark:bg-slate-700 mt-2 overflow-hidden"><div id="rho-bar" class="h-full w-0 bg-emerald-500 transition-all"></div></div><p id="rho-msg" class="mt-2 text-slate-500"></p></div>
             <div id="psych-controls" class="space-y-4 pt-4 border-t border-slate-200 dark:border-slate-800 hidden">
                 <h3 class="text-xs font-bold text-purple-400 uppercase tracking-wider">Factor Humano</h3>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs text-slate-500 mb-1 block">Paciencia (min)</label><input type="number" id="inp-patience" value="15" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
-                    <div><label class="text-xs text-slate-500 mb-1 block">Tol. Fila (Per)</label><input type="number" id="inp-tolerance" value="8" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label for="inp-patience" class="text-xs text-slate-500 mb-1 block">Paciencia (min)</label><input type="number" id="inp-patience" min="1" max="240" value="15" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
+                    <div><label for="inp-tolerance" class="text-xs text-slate-500 mb-1 block">Tol. Fila (Per)</label><input type="number" id="inp-tolerance" min="1" max="100" value="8" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-lg p-2.5 text-sm font-bold text-slate-700 dark:text-white outline-none"></div>
                 </div>
             </div>
         </div>
@@ -374,27 +332,30 @@
             <button id="btn-start" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-all"><span class="material-icons-round">play_arrow</span> INICIAR</button>
             <div class="grid grid-cols-2 gap-3">
                 <button id="btn-pause" disabled class="bg-white dark:bg-slate-700 text-slate-600 dark:text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-600 disabled:opacity-50"><span class="material-icons-round text-sm">pause</span> PAUSA</button>
-                <button onclick="window.returnToMenu()" class="bg-white dark:bg-slate-700 text-slate-600 dark:text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-600 hover:text-red-400"><span class="material-icons-round text-sm">logout</span> SALIR</button>
+                <button data-action="return-menu" class="bg-white dark:bg-slate-700 text-slate-600 dark:text-white py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1 border border-slate-200 dark:border-slate-600 hover:text-red-400"><span class="material-icons-round text-sm">logout</span> SALIR</button>
             </div>
         </div>
     </aside>
 
     <main class="flex-1 relative flex flex-col min-w-0">
+        <div class="absolute top-0 left-0 right-0 h-1 z-30 bg-slate-500/10"><div id="hud-progress" class="h-full w-0 bg-blue-500 transition-[width] duration-200"></div></div>
+        <div id="toast" role="status" class="pointer-events-none absolute bottom-28 md:bottom-6 left-1/2 -translate-x-1/2 z-30 px-4 py-2 rounded-full bg-slate-900/90 border border-white/10 text-xs text-white opacity-0 transition-opacity"></div>
         <div class="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
-            <button onclick="toggleSidebar()" class="pointer-events-auto lg:hidden bg-white dark:bg-slate-800 p-2 rounded-lg shadow-lg text-slate-700 dark:text-white"><span class="material-icons-round">menu</span></button>
+            <button data-action="toggle-sidebar" aria-label="Abrir panel de configuración" class="pointer-events-auto lg:hidden bg-white dark:bg-slate-800 p-2 rounded-lg shadow-lg text-slate-700 dark:text-white"><span class="material-icons-round">menu</span></button>
             <div class="glass-panel pointer-events-auto p-2 pr-4 rounded-xl flex items-center gap-4 shadow-xl border border-white/10 ml-auto">
                 <div class="flex flex-col items-center px-2 border-r border-slate-500/20"><span class="text-[10px] font-bold text-slate-400 uppercase">Reloj</span><span id="clock-display" class="font-mono text-xl font-bold text-slate-800 dark:text-white">00:00</span></div>
                 <div id="panel-overtime" class="hidden flex flex-col items-center px-2 border-r border-slate-500/20 animate-pulse text-red-500"><span class="text-[10px] font-bold uppercase tracking-wider">EXTRA!</span><span id="overtime-timer" class="font-mono text-lg font-bold">00:00</span></div>
                 <div class="flex gap-4">
                     <div><span class="text-[10px] font-bold text-fuchsia-400 uppercase block">VIP</span><span id="count-pref" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0</span></div>
                     <div><span class="text-[10px] font-bold text-amber-400 uppercase block">GRAL</span><span id="count-gen" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0</span></div>
-                    <div id="stat-abandon" class="hidden"><span class="text-[10px] font-bold text-red-400 uppercase block">FUGAS</span><span id="count-loss" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0</span></div>
+                    <div><span class="text-[10px] font-bold text-sky-400 uppercase block">ESPERA</span><span id="hud-wait" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0m</span></div><div class="hidden sm:block"><span class="text-[10px] font-bold text-emerald-400 uppercase block">OCUP.</span><span id="hud-util" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0%</span></div><div id="stat-abandon" class="hidden"><span class="text-[10px] font-bold text-red-400 uppercase block">FUGAS</span><span id="count-loss" class="font-mono text-lg font-bold text-slate-800 dark:text-white">0</span></div>
                 </div>
             </div>
         </div>
         <div class="absolute bottom-4 left-4 z-20 flex flex-col gap-2 pointer-events-auto">
-             <button id="btn-theme" class="w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-yellow-400 rounded-full flex items-center justify-center shadow-lg border border-slate-200 dark:border-slate-700 hover:scale-110 transition-transform"><span class="material-icons-round text-xl">light_mode</span></button>
+             <button id="btn-theme" aria-label="Cambiar tema" class="w-10 h-10 bg-white dark:bg-slate-800 text-slate-600 dark:text-yellow-400 rounded-full flex items-center justify-center shadow-lg border border-slate-200 dark:border-slate-700 hover:scale-110 transition-transform"><span class="material-icons-round text-xl">light_mode</span></button>
              <button id="btn-speed" class="px-3 py-2 bg-slate-800 text-white rounded-full flex items-center gap-1 shadow-lg border border-slate-700 font-bold text-xs"><span class="material-icons-round text-sm">speed</span> <span id="txt-speed">x1</span></button>
+             <button id="btn-view" aria-label="Cambiar vista de cámara" class="px-3 py-2 bg-slate-800 text-white rounded-full flex items-center gap-1 shadow-lg border border-slate-700 font-bold text-xs"><span class="material-icons-round text-sm">videocam</span> <span id="txt-view">FRONTAL</span></button>
         </div>
         <div class="absolute bottom-4 right-4 z-20 pointer-events-auto">
             <button id="btn-pico" class="bg-gradient-to-r from-red-600 to-orange-500 hover:scale-105 active:scale-95 text-white font-black px-4 py-3 rounded-full shadow-xl shadow-red-500/30 flex items-center gap-2 transition-all"><span class="material-icons-round text-lg animate-pulse">local_fire_department</span> HORA PICO</button>
@@ -405,40 +366,40 @@
                 <div class="relative z-10">
                     <h2 class="text-3xl font-black text-white mb-2">Simulación Completada</h2>
                     <p class="text-slate-400 mb-8">El periodo operativo ha finalizado.</p>
-                    <button onclick="window.openReport()" class="w-full bg-white hover:bg-slate-200 text-slate-900 font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">VER REPORTE IA <span class="material-icons-round">arrow_forward</span></button>
+                    <button data-action="open-report" class="w-full bg-white hover:bg-slate-200 text-slate-900 font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">VER REPORTE IA <span class="material-icons-round">arrow_forward</span></button>
                 </div>
             </div>
         </div>
-        <div id="report-modal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div id="report-modal" role="dialog" aria-modal="true" aria-label="Reporte ejecutivo" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
             <div class="bg-slate-50 dark:bg-slate-900 w-full max-w-6xl h-[90vh] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col relative overflow-hidden">
-                <button onclick="window.closeReport()" class="absolute top-4 right-4 z-20 bg-slate-200 dark:bg-slate-800 p-2 rounded-full hover:bg-red-500 hover:text-white transition-colors shadow-lg border border-slate-700"><span class="material-icons-round">close</span></button>
+                <button data-action="close-report" aria-label="Cerrar reporte" class="absolute top-4 right-4 z-20 bg-slate-200 dark:bg-slate-800 p-2 rounded-full hover:bg-red-500 hover:text-white transition-colors shadow-lg border border-slate-700"><span class="material-icons-round">close</span></button>
                 <div class="overflow-y-auto p-8 custom-scroll flex-1">
                     <div class="flex items-center gap-4 mb-8">
                         <div class="bg-blue-600 p-3 rounded-lg"><span class="material-icons-round text-white text-2xl">analytics</span></div>
                         <div><h2 class="text-2xl font-bold dark:text-white text-slate-800">Reporte Ejecutivo</h2><p class="text-slate-500 text-sm">Análisis de rendimiento y costos operativos</p></div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <div class="flip-group h-40 cursor-pointer">
+                        <div class="flip-group h-40 cursor-pointer" tabindex="0">
                             <div class="flip-inner">
                                 <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">Atención Total</span><span id="rep-total" class="text-4xl font-mono font-bold text-white">0</span></div>
                                 <div class="flip-back bg-slate-900 border border-blue-500/30 rounded-xl p-4 flex items-center justify-center text-center text-xs text-slate-300"><p>Volumen neto de clientes procesados.</p></div>
                             </div>
                         </div>
-                        <div class="flip-group h-40 cursor-pointer">
+                        <div class="flip-group h-40 cursor-pointer" tabindex="0">
                             <div class="flip-inner">
                                 <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">Ingresos Brutos</span><span id="rep-revenue" class="text-4xl font-mono font-bold text-emerald-400">$0</span></div>
                                 <div class="flip-back bg-slate-900 border border-emerald-500/30 rounded-xl p-4 flex items-center justify-center text-center text-xs text-slate-300"><p>Total facturado.</p></div>
                             </div>
                         </div>
-                        <div class="flip-group h-40 cursor-pointer">
+                        <div class="flip-group h-40 cursor-pointer" tabindex="0">
                             <div class="flip-inner">
                                 <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">Costo Operativo</span><span id="rep-cost" class="text-4xl font-mono font-bold text-rose-400">$0</span></div>
                                 <div class="flip-back bg-slate-900 border border-rose-500/30 rounded-xl p-4 flex items-center justify-center text-center text-xs text-slate-300"><p>Salarios + Insumos + Sobrecostos.</p></div>
                             </div>
                         </div>
-                        <div class="flip-group h-40 cursor-pointer">
+                        <div class="flip-group h-40 cursor-pointer" tabindex="0">
                             <div class="flip-inner">
-                                <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">ROI Neto</span><span id="rep-profit" class="text-4xl font-mono font-bold text-white">$0</span></div>
+                                <div class="flip-front bg-slate-800 border border-slate-700 rounded-xl flex flex-col items-center justify-center"><span class="text-xs uppercase font-bold text-slate-400 mb-2">ROI Neto</span><span id="rep-profit" class="text-4xl font-mono font-bold text-white">0%</span></div>
                                 <div class="flip-back bg-slate-900 border border-indigo-500/30 rounded-xl p-4 flex items-center justify-center text-center text-xs text-slate-300"><p>Rentabilidad real.</p></div>
                             </div>
                         </div>
@@ -460,7 +421,7 @@
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                         <div class="lg:col-span-1 bg-slate-800 p-6 rounded-xl border border-slate-700 h-80 flex flex-col">
-                            <h4 class="text-sm font-bold text-slate-400 uppercase mb-4 font-display">Distribución</h4>
+                            <h4 class="text-sm font-bold text-slate-400 uppercase mb-4 font-display">Cola en el tiempo</h4>
                             <div class="flex-1 relative w-full h-full"><canvas id="finalChart"></canvas></div>
                         </div>
                         <div class="lg:col-span-2 bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-xl border border-slate-700 relative overflow-hidden">
@@ -471,8 +432,23 @@
                     </div>
                 </div>
                 <div class="p-4 border-t border-slate-800 bg-slate-900 flex justify-end gap-3">
-                    <button onclick="window.returnToMenu()" class="px-6 py-3 bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:text-red-400 rounded-lg font-bold border border-transparent transition-colors flex items-center gap-2"><span class="material-icons-round text-sm">restart_alt</span> NUEVA SIMULACIÓN</button>
-                    <button onclick="window.closeReport()" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2"><span class="material-icons-round text-sm">map</span> VOLVER AL MAPA 3D</button>
+                    <button data-action="return-menu" class="px-6 py-3 bg-red-100 hover:bg-red-200 text-red-600 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:text-red-400 rounded-lg font-bold border border-transparent transition-colors flex items-center gap-2"><span class="material-icons-round text-sm">restart_alt</span> NUEVA SIMULACIÓN</button>
+                    <button data-action="close-report" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2"><span class="material-icons-round text-sm">map</span> VOLVER AL MAPA 3D</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmación para salir -->
+        <div id="exit-modal" role="dialog" aria-modal="true" class="hidden fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="modal-enter bg-slate-800 border border-slate-700 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative text-center">
+                <div class="w-14 h-14 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-4">
+                    <span class="material-icons-round text-3xl">warning</span>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">¿Salir de la simulación?</h3>
+                <p class="text-sm text-slate-400 mb-6">La simulación está en curso. Se perderá todo el progreso actual si decides salir ahora.</p>
+                <div class="flex gap-3">
+                    <button id="btn-cancel-exit" class="flex-1 py-3 rounded-xl font-bold text-sm bg-slate-700 text-white hover:bg-slate-600 transition-colors">Cancelar</button>
+                    <button id="btn-confirm-exit" class="flex-1 py-3 rounded-xl font-bold text-sm bg-red-600 text-white hover:bg-red-500 transition-colors shadow-lg shadow-red-500/20">Sí, salir</button>
                 </div>
             </div>
         </div>
@@ -480,4 +456,5 @@
 
     <script type="module" src="js/main.js"></script>
 </body>
-</html>
+</html> 
+
